@@ -23,6 +23,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.Bundle;
@@ -68,9 +74,14 @@ public class BundleWatcher<T>
      */
     private Map<Bundle, List<T>> m_mappings;
     /**
-     * Synchronous listener for bundle events.
+     * Bundle listener for bundle events. Cannot be null. 
      */
     private BundleListener m_bundleListener;
+
+	/**
+	 * A Service for running multithreaded tasks.
+	 */
+	private final ExecutorService executorService;
 
     /**
      * Create a new bundle watcher.
@@ -106,7 +117,30 @@ public class BundleWatcher<T>
         {
             m_observers.addAll( Arrays.asList( observers ) );
         }
+        
+        executorService = Executors.newScheduledThreadPool(3, new ThreadFactory() {
+
+			private final AtomicInteger count = new AtomicInteger();
+			
+			public Thread newThread(Runnable r) {
+				final Thread t = Executors.defaultThreadFactory().newThread(r);
+		        t.setName("Executor" + ": " + count.incrementAndGet());
+		        t.setDaemon(true);
+		        return t;
+			}
+		});
     }
+    
+    void destroy() {
+    	executorService.shutdown();
+        // wait for the queued tasks to execute
+        try {
+        	executorService.awaitTermination(60, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            // ignore
+        }
+    }
+
 
     /**
      * Registers a listener for bundle events and scans already active bundles.
@@ -134,6 +168,7 @@ public class BundleWatcher<T>
 
         }
         );
+
         // scan already started bundles
         Bundle[] bundles = m_context.getBundles();
         if( bundles != null )
@@ -179,17 +214,22 @@ public class BundleWatcher<T>
         if( resources != null && resources.size() > 0 )
         {
             LOG.debug( "Found resources " + resources );
-            for( BundleObserver<T> observer : m_observers )
-            {
-                try
-                {
-                    observer.addingEntries( bundle, Collections.unmodifiableList( resources ) );
-                }
-                catch( Throwable ignore )
-                {
-                    LOG.error( "Ignored exception during register", ignore );
-                }
-            }
+		            for( final BundleObserver<T> observer : m_observers )
+		            {
+		                try
+		                {
+		                	//here the executor service completes the job in an extra thread. 
+		                	executorService.submit(new Runnable() {
+		                		public void run() {
+		                			observer.addingEntries( bundle, Collections.unmodifiableList( resources ) );
+		                		}
+		                	});
+		                }
+		                catch( Throwable ignore )
+		                {
+		                    LOG.error( "Ignored exception during register", ignore );
+		                }
+		            }
         }
     }
 
