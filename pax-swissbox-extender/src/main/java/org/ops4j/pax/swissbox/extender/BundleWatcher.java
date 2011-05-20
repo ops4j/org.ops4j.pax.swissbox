@@ -241,6 +241,8 @@ public class BundleWatcher<T>
      */
     private void unregister( final Bundle bundle )
     {
+    	if (bundle == null)
+    		return; // no need to go any further, system probably stopped. 
         LOG.debug( "Releasing bundle [" + bundle.getSymbolicName() + "]" );
         final List<T> resources = m_mappings.get( bundle );
         if( resources != null && resources.size() > 0 )
