@@ -16,10 +16,10 @@
   <name>OPS4J Pax Swissbox</name>
   <description>
     OPS4J Pax Swissbox - Utilities for OSGi World.
-    Detailed information to be found at http://wiki.ops4j.org/confluence/x/LwRN.
+    Detailed information to be found at http://team.ops4j.org/wiki/display/PAXSB/.
   </description>
 
-  <url>http://www.ops4j.org/projects/pax/swissbox</url>
+  <url>http://team.ops4j.org/wiki/display/PAXSB/</url>
 
   <scm>
     <connection>scm:git:git://github.com/ops4j/org.ops4j.pax.swissbox.git</connection>
@@ -29,7 +29,7 @@
 
   <issueManagement>
     <system>jira</system>
-    <url>http://issues.ops4j.org/jira/browse/PAXSWISSBOX</url>
+    <url>http://issues.ops4j.org/jira/browse/PAXSB</url>
   </issueManagement>
 
   <properties>
@@ -192,6 +192,7 @@
         <module>pax-swissbox-converter</module>
         <module>pax-swissbox-core</module>
         <module>pax-swissbox-extender</module>
+        <module>pax-swissbox-framework</module>
         <module>pax-swissbox-lifecycle</module>
         <module>pax-swissbox-optional-jcl</module>
         <module>pax-swissbox-property</module>
@@ -207,6 +208,7 @@
         <module>pax-swissbox-converter</module>
         <module>pax-swissbox-core</module>
         <module>pax-swissbox-extender</module>
+        <module>pax-swissbox-framework</module>
         <module>pax-swissbox-lifecycle</module>
         <module>pax-swissbox-optional-jcl</module>
         <module>pax-swissbox-property</module>
