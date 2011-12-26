@@ -9,7 +9,11 @@
     </parent>
     <groupId>org.ops4j.pax.swissbox</groupId>
     <artifactId>pax-swissbox-framework</artifactId>
-    <name>Pax Swissbox Framework Helpers</name>
+    
+    <!-- not a bundle, this module is about launching OSGi frameworks from vanilla Java -->
+    <packaging>jar</packaging>
+    
+    <name>OPS4J Pax Swissbox :: Framework Helpers</name>
     <dependencies>
         <dependency>
             <groupId>org.ops4j.base</groupId>

@@ -38,7 +38,7 @@
     <dependency>
       <groupId>org.ops4j.pax.swissbox</groupId>
       <artifactId>pax-swissbox-lifecycle</artifactId>
-      <version>1.4.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.base</groupId>
