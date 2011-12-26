@@ -1,4 +1,3 @@
-package org.ops4j.pax.swissbox.framework;
 /*
  * Copyright 2011 Harald Wellmann.
  *
@@ -16,7 +15,7 @@ package org.ops4j.pax.swissbox.framework;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+package org.ops4j.pax.swissbox.framework;
 
 import static org.ops4j.spi.ServiceProviderFinder.findAnyServiceProvider;
 import static org.ops4j.spi.ServiceProviderFinder.findServiceProviders;
