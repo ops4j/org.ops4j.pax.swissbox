@@ -17,18 +17,26 @@
  */
 package org.ops4j.pax.swissbox.framework;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import java.net.URL;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class RemoteObjectTest
 {
+    private static final int REGISTRY_PORT = 21099;
+    private Registry registry;
     
     public static interface HelloService extends Remote
     {
@@ -43,13 +51,28 @@ public class RemoteObjectTest
         }        
     }
     
+    @Before
+    public void setUp() throws RemoteException {
+        registry = LocateRegistry.createRegistry( REGISTRY_PORT );
+    }
+    
+    @After
+    public void tearDown() throws NoSuchObjectException {
+        UnicastRemoteObject.unexportObject( registry, true );
+    }
+    
     @Test
-    public void exportAndUnexport() throws RemoteException, AlreadyBoundException {
+    public void exportAndUnexport() throws RemoteException, AlreadyBoundException, NotBoundException {
         URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
         System.setProperty("java.rmi.server.codebase", location.toString());
         HelloServiceImpl hello = new HelloServiceImpl();
-        Registry registry = LocateRegistry.getRegistry();
+        Registry registry = LocateRegistry.getRegistry( REGISTRY_PORT );
         UnicastRemoteObject.exportObject( hello, 0 );
         registry.rebind( "hello", hello );
+        
+        HelloService remoteHello = (HelloService) registry.lookup( "hello" );
+        assertThat(remoteHello.getMessage(), is("Hello Pax!"));
+        registry.unbind( "hello" );
+        UnicastRemoteObject.unexportObject( hello, true );
     }
 }

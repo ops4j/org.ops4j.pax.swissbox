@@ -65,8 +65,8 @@ public class RemoteFrameworkImpl implements RemoteFramework
 
     private void export() throws RemoteException, AccessException
     {
-        String port = System.getProperty( "org.ops4j.pax.exam.rmi.port", "1099" );
-        name = System.getProperty( "org.ops4j.pax.exam.rmi.name");
+        String port = System.getProperty( "pax.swissbox.framework.rmi.port", "1099" );
+        name = System.getProperty( "pax.swissbox.framework.rmi.name");
         registry = LocateRegistry.getRegistry( Integer.parseInt( port ) );
         URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
         URL location2 = Bundle.class.getProtectionDomain().getCodeSource().getLocation();
@@ -256,6 +256,7 @@ public class RemoteFrameworkImpl implements RemoteFramework
     
     public static void main( String[] args ) throws RemoteException, AlreadyBoundException, BundleException, InterruptedException
     {
+        System.out.println("starting RemoteFrameworkImpl");
         Map<String,String> props = buildFrameworkProperties(args);
         RemoteFrameworkImpl impl = new RemoteFrameworkImpl( props );
         impl.start();
