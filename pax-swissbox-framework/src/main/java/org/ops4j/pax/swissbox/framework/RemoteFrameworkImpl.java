@@ -157,7 +157,7 @@ public class RemoteFrameworkImpl implements RemoteFramework
                     props.put( key, null );
                 }
                 else {
-                    String key = arg.substring( 2, eq-1 );
+                    String key = arg.substring( 2, eq );
                     String value = arg.substring ( eq+1 );
                     props.put( key, value );                    
                 }
