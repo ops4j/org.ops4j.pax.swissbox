@@ -44,7 +44,7 @@ public class RemoteFrameworkImplTest
         String[] vmOptions = new String[]{
             "-Dosgi.console=6666",
             "-Dosgi.clean=true",
-            "-Dorg.osgi.framework.storage=/home/hwellmann/work/org.ops4j.pax.swissbox/pax-swissbox-framework/target/storage",
+            "-Dorg.osgi.framework.storage=target/storage",
             "-Dpax.swissbox.framework.rmi.port=1099",
             "-Dpax.swissbox.framework.rmi.name=PaxRemoteFramework"
         };

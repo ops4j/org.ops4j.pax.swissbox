@@ -31,6 +31,9 @@ import org.osgi.service.startlevel.StartLevel;
  */
 public interface RemoteFramework extends Remote
 {
+    public static final String RMI_PORT_KEY = "pax.swissbox.framework.rmi.port";
+    public static final String RMI_NAME_KEY = "pax.swissbox.framework.rmi.name";
+    
     /**
      * Initializes the framework.
      * 

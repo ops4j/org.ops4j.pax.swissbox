@@ -32,16 +32,14 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.logging.Logger;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.Filter;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.service.startlevel.StartLevel;
-import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Implements the {@link RemoteFramework} interface by instantiating a local {@link Framework},
@@ -50,12 +48,15 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author Harald Wellmann
  */
 public class RemoteFrameworkImpl implements RemoteFramework
-{    
+{
+    private static Logger LOG = Logger.getLogger( RemoteFrameworkImpl.class.getName() );
+
     private Framework framework;
     private Registry registry;
     private String name;
-    
-    public RemoteFrameworkImpl(Map<String, String> frameworkProperties) throws RemoteException, AlreadyBoundException, BundleException
+
+    public RemoteFrameworkImpl( Map<String, String> frameworkProperties ) throws RemoteException,
+        AlreadyBoundException, BundleException
     {
         FrameworkFactory frameworkFactory = findFrameworkFactory();
         this.framework = frameworkFactory.newFramework( frameworkProperties );
@@ -65,12 +66,12 @@ public class RemoteFrameworkImpl implements RemoteFramework
 
     private void export() throws RemoteException, AccessException
     {
-        String port = System.getProperty( "pax.swissbox.framework.rmi.port", "1099" );
-        name = System.getProperty( "pax.swissbox.framework.rmi.name");
+        String port = System.getProperty( RMI_PORT_KEY, "1099" );
+        name = System.getProperty( RMI_NAME_KEY );
         registry = LocateRegistry.getRegistry( Integer.parseInt( port ) );
         URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
         URL location2 = Bundle.class.getProtectionDomain().getCodeSource().getLocation();
-        System.setProperty("java.rmi.server.codebase", location.toString() + " " +location2);
+        System.setProperty( "java.rmi.server.codebase", location.toString() + " " + location2 );
         Remote remote = UnicastRemoteObject.exportObject( this, 0 );
         registry.rebind( name, remote );
     }
@@ -96,7 +97,7 @@ public class RemoteFrameworkImpl implements RemoteFramework
         {
             throw new IllegalStateException( exc );
         }
-        UnicastRemoteObject.unexportObject( this, true );        
+        UnicastRemoteObject.unexportObject( this, true );
     }
 
     public long installBundle( String bundleUrl ) throws RemoteException, BundleException
@@ -108,7 +109,9 @@ public class RemoteFrameworkImpl implements RemoteFramework
     public long installBundle( String bundleLocation, byte[] bundleData ) throws RemoteException,
         BundleException
     {
-        Bundle bundle = framework.getBundleContext().installBundle( bundleLocation, new ByteArrayInputStream( bundleData ) );
+        Bundle bundle =
+            framework.getBundleContext().installBundle( bundleLocation,
+                new ByteArrayInputStream( bundleData ) );
         return bundle.getBundleId();
     }
 
@@ -126,7 +129,7 @@ public class RemoteFrameworkImpl implements RemoteFramework
         BundleException
     {
         BundleContext bc = framework.getBundleContext();
-        StartLevel sl = getService( bc, StartLevel.class, 3000 );
+        StartLevel sl = ServiceLookup.getService( bc, StartLevel.class );
         Bundle bundle = bc.getBundle( bundleId );
         sl.setBundleStartLevel( bundle, startLevel );
     }
@@ -136,115 +139,85 @@ public class RemoteFrameworkImpl implements RemoteFramework
         framework.getBundleContext().getBundle( id ).uninstall();
     }
 
-    
-    public FrameworkFactory findFrameworkFactory() {
+    public FrameworkFactory findFrameworkFactory()
+    {
         ServiceLoader<FrameworkFactory> loader = ServiceLoader.load( FrameworkFactory.class );
         FrameworkFactory factory = loader.iterator().next();
-        return factory;        
+        return factory;
     }
-    
+
     private static Map<String, String> buildFrameworkProperties( String[] args )
-    {
-        Map<String,String> props = new HashMap<String, String>();
-        if (args.length % 2 != 0) {
-            throw new IllegalArgumentException( "even number of arguments required" );
-        }
-        for (int i = 0; i < args.length; i += 2) {
-            System.out.println(args[i]);
-            System.out.println(args[i+1]);
-            props.put( args[i], args[i+1] );
+    {        
+        Map<String, String> props = new HashMap<String, String>();
+        for (String arg : args) {
+            if (arg.startsWith("-F")) {
+                int eq = arg.indexOf("=");
+                if (eq == -1) {
+                    String key = arg.substring( 2 );
+                    props.put( key, null );
+                }
+                else {
+                    String key = arg.substring( 2, eq-1 );
+                    String value = arg.substring ( eq+1 );
+                    props.put( key, value );                    
+                }
+            }
+            else {
+                LOG.warning( "ignoring unknown argument " + arg );
+            }
         }
         return props;
     }
-    
-    public void callService( String filter, String methodName ) throws RemoteException, BundleException
+
+    public void callService( String filter, String methodName ) throws RemoteException,
+        BundleException
     {
         try
         {
-            System.out.println("acquiring service " + filter);
+            LOG.fine( "acquiring service " + filter );
             BundleContext bc = framework.getBundleContext();
-            Filter parsedFilter = bc.createFilter( filter );
-            ServiceTracker tracker = new ServiceTracker(bc, parsedFilter, null);
-            tracker.open();
-            tracker.waitForService( 30000 );
-            Object service = tracker.getService();
-            if (service == null) {
-                throw new IllegalStateException("could not acquire ProbeInvoker service");
-            }
+            Object service = ServiceLookup.getServiceByFilter( bc, filter );
             Class<? extends Object> klass = service.getClass();
             Method method;
             try
             {
                 method = klass.getMethod( methodName, Object[].class );
-                System.out.println("method = " + method);
-                method.invoke( service, (Object) new Object[] {} );
+                LOG.fine( "calling service method " + method );
+                method.invoke( service, (Object) new Object[]{} );
             }
             catch ( NoSuchMethodException e )
             {
-                method = klass.getMethod( methodName);
-                System.out.println("method = " + method);
+                method = klass.getMethod( methodName );
+                LOG.fine( "calling service method  " + method );
                 method.invoke( service );
-            }            
-            tracker.close();
-        }
-        catch ( InvalidSyntaxException exc )
-        {
-            throw new IllegalStateException(exc);
-        }
-        catch ( InterruptedException exc )
-        {
-            throw new IllegalStateException(exc);
+            }
         }
         catch ( SecurityException exc )
         {
-            throw new IllegalStateException(exc);
+            throw new IllegalStateException( exc );
         }
         catch ( NoSuchMethodException exc )
         {
-            throw new IllegalStateException(exc);
+            throw new IllegalStateException( exc );
         }
         catch ( IllegalArgumentException exc )
         {
-            throw new IllegalStateException(exc);
+            throw new IllegalStateException( exc );
         }
         catch ( IllegalAccessException exc )
         {
-            throw new IllegalStateException(exc);
+            throw new IllegalStateException( exc );
         }
         catch ( InvocationTargetException exc )
         {
-            throw new IllegalStateException(exc);
-        }        
+            throw new IllegalStateException( exc );
+        }
     }
-
-    @SuppressWarnings( "unchecked" )
-    public static <T> T getService( BundleContext context, Class<T> klass, int timeout )
-    {
-        ServiceTracker tracker = new ServiceTracker( context, klass.getName(), null );
-        try
-        {
-            tracker.open();
-            Object svc = tracker.waitForService( timeout );
-            if( svc == null )
-            {
-                throw new RuntimeException( "gave up waiting for service " + klass.getName() );
-            }
-            return (T) svc;
-        }
-        catch ( InterruptedException exc )
-        {
-            throw new RuntimeException( exc );
-        }
-        finally
-        {
-            tracker.close();
-        }
-    }    
 
     public void setFrameworkStartLevel( int startLevel )
     {
         BundleContext bc = framework.getBundleContext();
-        StartLevel sl = getService( bc, StartLevel.class, 3000 );
+        StartLevel sl = ServiceLookup.getService( bc, StartLevel.class );
         sl.setStartLevel( startLevel );
     }
 
@@ -253,11 +226,12 @@ public class RemoteFrameworkImpl implements RemoteFramework
     {
         throw new UnsupportedOperationException( "not yet implemented" );
     }
-    
-    public static void main( String[] args ) throws RemoteException, AlreadyBoundException, BundleException, InterruptedException
+
+    public static void main( String[] args ) throws RemoteException, AlreadyBoundException,
+        BundleException, InterruptedException
     {
-        System.out.println("starting RemoteFrameworkImpl");
-        Map<String,String> props = buildFrameworkProperties(args);
+        LOG.fine( "starting RemoteFrameworkImpl" );
+        Map<String, String> props = buildFrameworkProperties( args );
         RemoteFrameworkImpl impl = new RemoteFrameworkImpl( props );
         impl.start();
     }
