@@ -65,9 +65,7 @@ public class RemoteFrameworkImplTest
     public void forkEquinox() throws BundleException, IOException, InterruptedException,
         NotBoundException
     {
-        Registry registry = LocateRegistry.getRegistry();
-        Thread.sleep( 1000 );
-        RemoteFramework framework = (RemoteFramework) registry.lookup( "PaxRemoteFramework" );
+        RemoteFramework framework = findRemoteFramework (1099, "PaxRemoteFramework");
         framework.start();
 
         long commonsIoId = framework.installBundle( "file:target/bundles/commons-io-2.1.jar" );
@@ -75,6 +73,28 @@ public class RemoteFrameworkImplTest
 
         framework.stop();
     }
+    
+    private RemoteFramework findRemoteFramework(int port, String rmiName )
+    {
+        RemoteFramework framework = null;
+        long startedTrying = System.currentTimeMillis();
+
+            do
+            {
+                try
+                {
+                    Registry reg = LocateRegistry.getRegistry(  );
+                    framework = (RemoteFramework) reg.lookup( rmiName );
+                }
+                catch ( Exception e )
+                {
+                    // ignore 
+                }
+            }
+            while ( framework == null && ( System.currentTimeMillis() < startedTrying + 10000 ) );
+        return framework;
+    }
+    
 
     private String[] buildClasspath()
     {
