@@ -29,15 +29,15 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.ops4j.lang.NullArgumentException;
+import org.ops4j.pax.swissbox.lifecycle.AbstractLifecycle;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.SynchronousBundleListener;
-import org.ops4j.lang.NullArgumentException;
-import org.ops4j.pax.swissbox.lifecycle.AbstractLifecycle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Watches bundles life cycle events. Once a bundle becomes active a scanning process will be performed and each bundle
@@ -55,7 +55,7 @@ public class BundleWatcher<T>
     /**
      * Logger.
      */
-    private static final Log LOG = LogFactory.getLog( BundleWatcher.class );
+    private static final Logger LOG = LoggerFactory.getLogger( BundleWatcher.class );
 
     /**
      * Bundle context in use. Constructor parameter. Cannot be null.

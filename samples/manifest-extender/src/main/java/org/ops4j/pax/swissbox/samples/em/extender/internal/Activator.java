@@ -18,16 +18,17 @@
 package org.ops4j.pax.swissbox.samples.em.extender.internal;
 
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+
 import org.ops4j.pax.swissbox.extender.BundleManifestScanner;
 import org.ops4j.pax.swissbox.extender.BundleObserver;
 import org.ops4j.pax.swissbox.extender.BundleWatcher;
 import org.ops4j.pax.swissbox.extender.ManifestEntry;
 import org.ops4j.pax.swissbox.extender.RegexKeyManifestFilter;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Activator for a manifest header based extender.
@@ -42,7 +43,7 @@ public class Activator
     /**
      * Logger.
      */
-    private static final Log LOG = LogFactory.getLog( Activator.class );
+    private static final Logger LOG = LoggerFactory.getLogger( Activator.class );
 
     /**
      * Bundle Watcher.

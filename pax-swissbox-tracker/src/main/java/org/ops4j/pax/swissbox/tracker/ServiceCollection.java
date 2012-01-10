@@ -21,13 +21,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.ops4j.lang.NullArgumentException;
+import org.ops4j.pax.swissbox.lifecycle.AbstractLifecycle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
-import org.ops4j.lang.NullArgumentException;
-import org.ops4j.pax.swissbox.lifecycle.AbstractLifecycle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A collection of tracked services.
@@ -43,7 +44,7 @@ public class ServiceCollection<T>
     /**
      * Logger.
      */
-    private static final Log LOG = LogFactory.getLog( ServiceCollection.class );
+    private static final Logger LOG = LoggerFactory.getLogger( ServiceCollection.class );
 
     /**
      * Bundle context. Constructor parameter. Cannot be null.
