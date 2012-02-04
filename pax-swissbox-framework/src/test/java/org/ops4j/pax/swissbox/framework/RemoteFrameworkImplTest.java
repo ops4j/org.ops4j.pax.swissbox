@@ -26,7 +26,7 @@ import java.rmi.registry.Registry;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.ops4j.base.exec.DefaultJavaRunner;
+import org.ops4j.exec.DefaultJavaRunner;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.FrameworkFactory;
 
