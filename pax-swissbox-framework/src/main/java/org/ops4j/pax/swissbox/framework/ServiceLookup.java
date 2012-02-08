@@ -28,7 +28,7 @@ import org.osgi.util.tracker.ServiceTracker;
 /**
  * A utility class for looking up services from the OSGi registry. The methods of this class wait
  * for the service for a given timeout (default 10 seconds) and throw a
- * {@code TestContainerException} when no matching service becomes available during this period.
+ * {@code ServiceLookupException} when no matching service becomes available during this period.
  * <p>
  * NOTE: Prefixing some method calls with our own class name is a workaround for a bug in the Oracle
  * Java compiler, which does not occur when compiling in Eclipse.
