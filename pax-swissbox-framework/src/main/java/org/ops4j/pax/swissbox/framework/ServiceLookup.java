@@ -96,7 +96,8 @@ public class ServiceLookup
             {
                 throw new ServiceLookupException( "gave up waiting for service " + className );
             }
-            return (T) svc;
+			// increment the service use count to keep it valid after the ServiceTracker is closed
+            return (T) bc.getService(tracker.getServiceReference());
         }
         catch ( InterruptedException exc )
         {
@@ -121,7 +122,8 @@ public class ServiceLookup
             {
                 throw new ServiceLookupException( "gave up waiting for service " + className );
             }
-            return (T) svc;
+			// increment the service use count to keep it valid after the ServiceTracker is closed
+            return (T) bc.getService(tracker.getServiceReference());
         }
         catch ( InterruptedException exc )
         {
