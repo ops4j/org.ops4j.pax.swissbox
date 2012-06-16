@@ -36,7 +36,7 @@ public class BundleUtils
 {
 
     /**
-     * Discovers the bundle context for a bundle. If the bundle is an 4.1.0 or greather bundle it should have a method
+     * Discovers the bundle context for a bundle. If the bundle is an 4.1.0 or greater bundle it should have a method
      * that just returns the bundle context. Otherwise uses reflection to look for an internal bundle context.
      *
      * @param bundle the bundle from which the bundle context is needed
@@ -48,7 +48,7 @@ public class BundleUtils
         try
         {
             // first try to find the getBundleContext method (OSGi spec >= 4.10)
-            final Method method = bundle.getClass().getDeclaredMethod( "getBundleContext" );
+            final Method method = Bundle.class.getDeclaredMethod( "getBundleContext" );
             if( !method.isAccessible() )
             {
                 method.setAccessible( true );
