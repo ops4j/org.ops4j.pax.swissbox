@@ -124,7 +124,7 @@ public class BundleWatcher<T>
 			
 			public Thread newThread(Runnable r) {
 				final Thread t = Executors.defaultThreadFactory().newThread(r);
-		        t.setName("Executor" + ": " + count.incrementAndGet());
+		        t.setName("BundleWatcher" + ": " + count.incrementAndGet());
 		        t.setDaemon(true);
 		        return t;
 			}
@@ -221,7 +221,14 @@ public class BundleWatcher<T>
 		                	//here the executor service completes the job in an extra thread. 
 		                	executorService.submit(new Runnable() {
 		                		public void run() {
-		                			observer.addingEntries( bundle, Collections.unmodifiableList( resources ) );
+		                		    try 
+		                		    {
+		                		        observer.addingEntries( bundle, Collections.unmodifiableList( resources ) );
+		                		    }
+		                		    catch (Throwable t)
+		                		    {
+		                		        LOG.error( "Exception in executor thread", t );
+		                		    }
 		                		}
 		                	});
 		                }
