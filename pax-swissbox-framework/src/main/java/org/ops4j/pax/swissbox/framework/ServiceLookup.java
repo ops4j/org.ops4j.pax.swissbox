@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -38,19 +39,49 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class ServiceLookup
 {
-
+    /**
+     * Default timeout used for service lookup when no explicit timeout is specified.
+     */
     public static final long DEFAULT_TIMEOUT = 10000;
 
+    /**
+     * Returns a service matching the given criteria.
+     * 
+     * @param <T> class implemented or extended by the service
+     * @param bc bundle context for accessing the OSGi registry
+     * @param className name of class implemented or extended by the service
+     * @return matching service (not null)
+     * @throws ServiceLookupException when no matching service has been found after the timeout
+     */
     public static <T> T getService( BundleContext bc, String className )
     {
         return ServiceLookup.<T> getService( bc, className, DEFAULT_TIMEOUT, "" );
     }
 
+    /**
+     * Returns a service matching the given criteria.
+     * 
+     * @param <T> class implemented or extended by the service
+     * @param bc bundle context for accessing the OSGi registry
+     * @param type class implemented or extended by the service
+     * @return matching service (not null)
+     * @throws ServiceLookupException when no matching service has been found after the timeout
+     */
     public static <T> T getService( BundleContext bc, Class<T> type )
     {
         return getService( bc, type, DEFAULT_TIMEOUT );
     }
 
+    /**
+     * Returns a service matching the given criteria.
+     * 
+     * @param <T> class implemented or extended by the service
+     * @param bc bundle context for accessing the OSGi registry
+     * @param type class implemented or extended by the service
+     * @param props properties to be matched by the service
+     * @return matching service (not null)
+     * @throws ServiceLookupException when no matching service has been found after the timeout
+     */
     public static <T> T getService( BundleContext bc, Class<T> type, Map<String, String> props )
     {
         return getService( bc, type, DEFAULT_TIMEOUT, props );
@@ -65,7 +96,7 @@ public class ServiceLookup
      * @param timeout maximum wait period in milliseconds
      * @param props properties to be matched by the service
      * @return matching service (not null)
-     * @throws ServiceLookupException
+     * @throws ServiceLookupException when no matching service has been found after the timeout
      */
     public static <T> T getService( BundleContext bc, Class<T> type, long timeout,
             Map<String, String> props )
@@ -73,16 +104,49 @@ public class ServiceLookup
         return ServiceLookup.<T> getService( bc, type.getName(), timeout, props );
     }
 
+    /**
+     * Returns a service matching the given criteria.
+     * 
+     * @param <T> class implemented or extended by the service
+     * @param bc bundle context for accessing the OSGi registry
+     * @param type class implemented or extended by the service
+     * @param timeout maximum wait period in milliseconds
+     * @return matching service (not null)
+     * @throws ServiceLookupException when no matching service has been found after the timeout
+     */
     public static <T> T getService( BundleContext bc, Class<T> type, long timeout )
     {
         return ServiceLookup.<T> getService( bc, type.getName(), timeout, "" );
     }
 
+    /**
+     * Returns a service matching the given criteria.
+     * 
+     * @param <T> class implemented or extended by the service
+     * @param bc bundle context for accessing the OSGi registry
+     * @param type class implemented or extended by the service
+     * @param timeout maximum wait period in milliseconds
+     * @param filter LDAP filter to be matched by the service. The class name will be added to the
+     *        filter.
+     * @return matching service (not null)
+     * @throws ServiceLookupException when no matching service has been found after the timeout
+     */
     public static <T> T getService( BundleContext bc, Class<T> type, long timeout, String filter )
     {
         return ServiceLookup.<T> getService( bc, type.getName(), timeout, filter );
     }
 
+    /**
+     * Returns a service matching the given criteria.
+     * 
+     * @param <T> class implemented or extended by the service
+     * @param bc bundle context for accessing the OSGi registry
+     * @param className name of class implemented or extended by the service
+     * @param timeout maximum wait period in milliseconds
+     * @param props properties to be matched by the service
+     * @return matching service (not null)
+     * @throws ServiceLookupException when no matching service has been found after the timeout
+     */
     @SuppressWarnings( "unchecked" )
     public static <T> T getService( BundleContext bc, String className, long timeout,
             Map<String, String> props )
@@ -97,7 +161,7 @@ public class ServiceLookup
                 throw new ServiceLookupException( "gave up waiting for service " + className );
             }
             // increment the service use count to keep it valid after the ServiceTracker is closed
-            return (T) bc.getService(tracker.getServiceReference());
+            return (T) bc.getService( tracker.getServiceReference() );
         }
         catch ( InterruptedException exc )
         {
@@ -109,6 +173,18 @@ public class ServiceLookup
         }
     }
 
+    /**
+     * Returns a service matching the given criteria.
+     * 
+     * @param <T> class implemented or extended by the service
+     * @param bc bundle context for accessing the OSGi registry
+     * @param className name of class implemented or extended by the service
+     * @param timeout maximum wait period in milliseconds
+     * @param filter LDAP filter to be matched by the service. The class name will be added to the
+     *        filter.
+     * @return matching service (not null)
+     * @throws ServiceLookupException when no matching service has been found after the timeout
+     */
     @SuppressWarnings( "unchecked" )
     public static <T> T getService( BundleContext bc, String className, long timeout,
             String filter )
@@ -123,7 +199,43 @@ public class ServiceLookup
                 throw new ServiceLookupException( "gave up waiting for service " + className );
             }
             // increment the service use count to keep it valid after the ServiceTracker is closed
-            return (T) bc.getService(tracker.getServiceReference());
+            return (T) bc.getService( tracker.getServiceReference() );
+        }
+        catch ( InterruptedException exc )
+        {
+            throw new ServiceLookupException( exc );
+        }
+        finally
+        {
+            tracker.close();
+        }
+    }
+
+    /**
+     * Returns a service reference matching the given criteria.
+     * 
+     * @param bc bundle context for accessing the OSGi registry
+     * @param className name of class implemented or extended by the service
+     * @param timeout maximum wait period in milliseconds
+     * @param filter LDAP filter to be matched by the service. The class name will be added to the
+     *        filter.
+     * @return matching service reference (not null)
+     * @throws ServiceLookupException
+     */
+    public static ServiceReference getServiceReference( BundleContext bc, String className,
+            long timeout,
+            String filter )
+    {
+        ServiceTracker tracker = createServiceTracker( bc, className, filter );
+        try
+        {
+            tracker.open();
+            Object svc = tracker.waitForService( timeout );
+            if( svc == null )
+            {
+                throw new ServiceLookupException( "gave up waiting for service " + className );
+            }
+            return tracker.getServiceReference();
         }
         catch ( InterruptedException exc )
         {
@@ -188,19 +300,45 @@ public class ServiceLookup
         return createServiceTrackerWithFilter( bc, builder.toString() );
     }
 
-    public static Object getServiceByFilter(BundleContext bc, String ldapFilter ) {
+    /**
+     * Returns a service matching the given filter.
+     * 
+     * @param bc bundle context for accessing the OSGi registry
+     * @param ldapFilter LDAP filter to be matched by the service. The class name must be part of the
+     *        filter.
+     * @return matching service (not null)
+     * @throws ServiceLookupException when no matching service has been found after the default
+     *         timeout
+     */
+    public static Object getServiceByFilter( BundleContext bc, String ldapFilter )
+    {
         return getServiceByFilter( bc, ldapFilter, DEFAULT_TIMEOUT );
     }
-    
-    
-    public static Object getServiceByFilter(BundleContext bc, String ldapFilter, long timeout ) {
+
+    /**
+     * Returns a service matching the given filter.
+     * 
+     * @param bc bundle context for accessing the OSGi registry
+     * @param ldapFilter LDAP filter to be matched by the service. The class name must be part of the
+     *        filter.
+     * @param timeout maximum wait period in milliseconds
+     * @return matching service (not null)
+     * @throws ServiceLookupException when no matching service has been found after the timeout
+     */
+    public static Object getServiceByFilter( BundleContext bc, String ldapFilter, long timeout )
+    {
         try
         {
             Filter filter = bc.createFilter( ldapFilter );
             ServiceTracker tracker = new ServiceTracker( bc, filter, null );
             tracker.open();
             Object svc = tracker.waitForService( timeout );
-            return svc;
+            if( svc == null )
+            {
+                throw new ServiceLookupException( "gave up waiting for service " + ldapFilter );
+            }
+            // increment the service use count to keep it valid after the ServiceTracker is closed
+            return bc.getService( tracker.getServiceReference() );
         }
         catch ( InvalidSyntaxException exc )
         {
