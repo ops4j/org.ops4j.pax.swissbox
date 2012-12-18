@@ -24,8 +24,9 @@ import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
-import org.osgi.framework.Bundle;
 import org.ops4j.lang.NullArgumentException;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleReference;
 
 /**
  * Class loader that uses the a bundle in order to implement class loader functionality.
@@ -33,7 +34,7 @@ import org.ops4j.lang.NullArgumentException;
  * @author Alin Dreghiciu
  * @since 0.1.0, December 29, 2007
  */
-public class BundleClassLoader extends ClassLoader
+public class BundleClassLoader extends ClassLoader implements BundleReference
 {
 
     private static final EmptyEnumeration<URL> EMPTY_URL_ENUMERATION = new EmptyEnumeration<URL>();
@@ -150,7 +151,6 @@ public class BundleClassLoader extends ClassLoader
      * @see ClassLoader#getResources(String)
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Enumeration<URL> getResources( final String name )
         throws IOException
     {
@@ -170,7 +170,7 @@ public class BundleClassLoader extends ClassLoader
      * @see ClassLoader#findClass(String)
      */
     @Override
-    protected Class findClass( final String name )
+    protected Class<?> findClass( final String name )
         throws ClassNotFoundException
     {
         return m_bundle.loadClass( name );
@@ -184,14 +184,14 @@ public class BundleClassLoader extends ClassLoader
      * @see ClassLoader#getResource(String)
      */
     @Override
-    protected Class loadClass( final String name, final boolean resolve )
+    protected Class<?> loadClass( final String name, final boolean resolve )
         throws ClassNotFoundException
     {
         if( getParent() != null )
         {
             return super.loadClass( name, resolve );
         }
-        final Class classToLoad = findClass( name );
+        final Class<?> classToLoad = findClass( name );
         if( resolve )
         {
             resolveClass( classToLoad );
@@ -220,7 +220,7 @@ public class BundleClassLoader extends ClassLoader
     protected Enumeration<URL> findResources( final String name )
         throws IOException
     {
-        Enumeration resources = m_bundle.getResources( name );
+        Enumeration<URL> resources = m_bundle.getResources( name );
         // Bundle.getResources may return null, in such case return empty enumeration
         if( resources == null )
         {
