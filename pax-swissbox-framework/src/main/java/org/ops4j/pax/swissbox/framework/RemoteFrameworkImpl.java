@@ -32,11 +32,15 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.service.startlevel.StartLevel;
@@ -219,6 +223,40 @@ public class RemoteFrameworkImpl implements RemoteFramework
         BundleContext bc = framework.getBundleContext();
         StartLevel sl = ServiceLookup.getService( bc, StartLevel.class );
         sl.setStartLevel( startLevel );
+    }
+
+    public boolean setFrameworkStartLevel( final int startLevel, long timeout )
+        throws RemoteException
+    {
+        BundleContext bc = framework.getBundleContext();
+        final StartLevel sl = ServiceLookup.getService( bc, StartLevel.class );
+        final CountDownLatch latch = new CountDownLatch( 1 );
+        bc.addFrameworkListener( new FrameworkListener()
+        {
+
+            public void frameworkEvent( FrameworkEvent frameworkEvent )
+            {
+                switch( frameworkEvent.getType() )
+                {
+                    case FrameworkEvent.STARTLEVEL_CHANGED:
+                        if( sl.getStartLevel() == startLevel )
+                        {
+                            latch.countDown();
+                        }
+                }
+            }
+        } );
+        sl.setStartLevel( startLevel );
+        boolean startLevelReached;
+        try
+        {
+            startLevelReached = latch.await( timeout, TimeUnit.MILLISECONDS );
+            return startLevelReached;
+        }
+        catch ( InterruptedException exc )
+        {
+            throw new RemoteException( "interrupted while waiting", exc );
+        }
     }
 
     public void waitForState( long bundleId, int state, long timeoutInMillis )

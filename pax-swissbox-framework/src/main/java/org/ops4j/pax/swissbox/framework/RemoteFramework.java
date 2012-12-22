@@ -146,5 +146,14 @@ public interface RemoteFramework extends Remote
      */
     void setFrameworkStartLevel(int startLevel) throws RemoteException;
     
-
+    /**
+     * Sets the framework startlevel and waits for at most the given timeout (in ms) for the
+     * startlevel to be reached. 
+     * @see {@link StartLevel#setStartLevel(int)}
+     * @param startLevel
+     * @throws RemoteException
+     * @return true if the start level has been reached within the given timeout
+     */
+    boolean setFrameworkStartLevel(int startLevel, long timeout) 
+            throws RemoteException;
 }
