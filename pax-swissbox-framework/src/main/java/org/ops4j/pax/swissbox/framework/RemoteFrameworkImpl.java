@@ -273,4 +273,14 @@ public class RemoteFrameworkImpl implements RemoteFramework
         RemoteFrameworkImpl impl = new RemoteFrameworkImpl( props );
         impl.start();
     }
+
+    public int getBundleState( long bundleId ) throws RemoteException, BundleException
+    {
+        Bundle bundle = framework.getBundleContext().getBundle( bundleId );
+        if( bundle == null )
+        {
+            throw new BundleException( String.format( "bundle [%d] does not exist", bundleId ) );
+        }
+        return bundle.getState();
+    }
 }

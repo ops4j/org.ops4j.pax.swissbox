@@ -156,4 +156,14 @@ public interface RemoteFramework extends Remote
      */
     boolean setFrameworkStartLevel(int startLevel, long timeout) 
             throws RemoteException;
+    
+    /**
+     * Returns the state of the bundle with the given ID.
+     * @see {@link org.osgi.framework.Bundle#getState()}
+     * @param bundleId bundle ID
+     * @return state of bundle
+     * @throws RemoteException
+     * @throws BundleException if there is no bundle with the given ID
+     */
+    int getBundleState(long bundleId) throws RemoteException, BundleException;
 }
