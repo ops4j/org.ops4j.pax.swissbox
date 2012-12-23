@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.exec.DefaultJavaRunner;
+import org.ops4j.pax.swissbox.tracker.ServiceLookup;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.FrameworkFactory;
 
@@ -94,17 +95,18 @@ public class RemoteFrameworkImplTest
             while ( framework == null && ( System.currentTimeMillis() < startedTrying + 10000 ) );
         return framework;
     }
-    
-
+        
     private String[] buildClasspath()
     {
-        String frameworkPath =
-            frameworkFactory.getClass().getProtectionDomain().getCodeSource().getLocation()
-                .toString();
-        String launcherPath =
-            RemoteFrameworkImpl.class.getProtectionDomain().getCodeSource().getLocation()
-                .toString();
-        return new String[]{ frameworkPath, launcherPath };
+        String frameworkPath = toPath( frameworkFactory.getClass() );
+        String launcherPath = toPath( RemoteFrameworkImpl.class );
+        String serviceLookupPath = toPath( ServiceLookup.class );
+        return new String[]{ frameworkPath, launcherPath, serviceLookupPath };
+    }
+
+    private static String toPath( Class<?> klass )
+    {
+        return klass.getProtectionDomain().getCodeSource().getLocation().toString();
     }
 
     private String findJavaHome()

@@ -36,6 +36,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import org.ops4j.pax.swissbox.tracker.ServiceLookup;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -73,9 +74,10 @@ public class RemoteFrameworkImpl implements RemoteFramework
         String port = System.getProperty( RMI_PORT_KEY, "1099" );
         name = System.getProperty( RMI_NAME_KEY );
         registry = LocateRegistry.getRegistry( Integer.parseInt( port ) );
-        URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
+        URL location1 = getClass().getProtectionDomain().getCodeSource().getLocation();
         URL location2 = Bundle.class.getProtectionDomain().getCodeSource().getLocation();
-        System.setProperty( "java.rmi.server.codebase", location.toString() + " " + location2 );
+        URL location3 = ServiceLookup.class.getProtectionDomain().getCodeSource().getLocation();
+        System.setProperty( "java.rmi.server.codebase", location1 + " " + location2 + " " + location3);
         Remote remote = UnicastRemoteObject.exportObject( this, 0 );
         registry.rebind( name, remote );
     }

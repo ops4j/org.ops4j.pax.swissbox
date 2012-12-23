@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.swissbox.framework;
+package org.ops4j.pax.swissbox.tracker;
 
 import java.util.Map;
 import java.util.Map.Entry;
