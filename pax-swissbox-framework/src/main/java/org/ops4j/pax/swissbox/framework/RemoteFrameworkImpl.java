@@ -111,6 +111,33 @@ public class RemoteFrameworkImpl implements RemoteFramework
         Bundle bundle = framework.getBundleContext().installBundle( bundleUrl );
         return bundle.getBundleId();
     }
+    
+    public long installBundle(String bundleUrl, boolean autostart, int startLevel) throws RemoteException, BundleException 
+    {
+        //Install the bundle
+        BundleContext bundleContext = framework.getBundleContext();
+        Bundle bundle = bundleContext.installBundle( bundleUrl );
+        setupBundle(autostart, startLevel, bundleContext, bundle);
+        return bundle.getBundleId();
+    }
+    
+    public long installBundle(String bundleLocation, byte[] bundleData, boolean autostart, int startLevel) throws RemoteException, BundleException 
+    {
+        BundleContext bundleContext = framework.getBundleContext();
+        Bundle bundle = bundleContext.installBundle( bundleLocation, new ByteArrayInputStream( bundleData ) );
+        setupBundle(autostart, startLevel, bundleContext, bundle);
+        return bundle.getBundleId();
+    }
+
+    private static void setupBundle(boolean autostart, int startLevel, BundleContext bundleContext, Bundle bundle) throws BundleException {
+        //set the requested start level
+        StartLevel sl = ServiceLookup.getService(bundleContext, StartLevel.class);
+        sl.setBundleStartLevel(bundle, startLevel);
+        //start it if requested
+        if (autostart) {
+            bundle.start();
+        }
+    }
 
     public long installBundle( String bundleLocation, byte[] bundleData ) throws RemoteException,
         BundleException
@@ -285,4 +312,5 @@ public class RemoteFrameworkImpl implements RemoteFramework
         }
         return bundle.getState();
     }
+
 }

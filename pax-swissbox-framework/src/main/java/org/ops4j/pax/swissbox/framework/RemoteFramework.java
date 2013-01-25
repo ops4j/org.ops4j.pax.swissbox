@@ -72,6 +72,33 @@ public interface RemoteFramework extends Remote
     long installBundle(String bundleUrl)
             throws RemoteException, BundleException;
 
+    
+    /**
+     * Installs a bundle remotely, autostart it if requested and set its startlevel
+     *
+     * @param bundleUrl url of the bundle to be installed. The url must be accessible from the remote framework.
+     * @param autostart if <code>true</code> start the bundle after install otherwhise just set the startlevel
+     * @param startLevel set the given startlevel for this bundle after it is installed
+     * @return bundle id of the installed bundle
+     * @throws RemoteException - Remote communication related exception (mandatory by RMI)
+     * @throws BundleException - Re-thrown from installing the bundle
+     */
+    long installBundle(String bundleUrl, boolean autostart, int startLevel)
+            throws RemoteException, BundleException;
+    
+    /**
+     * Installs a bundle remotely, given the bundle content, autostart it if requested and set its startlevel
+     *
+     * @param bundleUrl url of the bundle to be installed. The url must be accessible from the remote framework.
+     * @param autostart if <code>true</code> start the bundle after install otherwhise just set the startlevel
+     * @param startLevel set the given startlevel for this bundle after it is installed
+     * @return bundle id of the installed bundle
+     * @throws RemoteException - Remote communication related exception (mandatory by RMI)
+     * @throws BundleException - Re-thrown from installing the bundle
+     */
+    long installBundle(String bundleLocation, byte[] bundle, boolean autostart, int startLevel)
+            throws RemoteException, BundleException;
+    
     /**
      * Installs a bundle remotely, given the bundle content.
      *
