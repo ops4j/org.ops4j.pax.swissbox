@@ -19,8 +19,10 @@ package org.ops4j.pax.swissbox.framework;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.concurrent.TimeUnit;
 
 import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.launch.Framework;
 import org.osgi.service.startlevel.StartLevel;
 
@@ -164,6 +166,46 @@ public interface RemoteFramework extends Remote
             throws RemoteException, BundleException;
     
     void callService(String filter, String methodName) throws RemoteException, BundleException;
+    
+    /**
+     * Invokes a method on this reference in the remote framework
+     * 
+     * @param name
+     * @param args
+     * @return
+     */
+    Object invokeMethodOnService(RemoteServiceReference reference, String methodName, Object... args) throws RemoteException, Exception;
+    
+    /**
+     * Invokes a method on this reference in the remote framework
+     * 
+     * @param name
+     * @param args
+     * @return
+     */
+    Object invokeMethodOnService(RemoteServiceReference reference, String methodName, Class<?>[] parameterTypes, Object[] args) throws RemoteException, Exception;
+    
+    /**
+     * Fetch an array of {@link RemoteServiceReference} to interact with them, this is a snapshot of the current state and must be recalled to update
+     * @param filter
+     * @return
+     * @throws RemoteException
+     * @throws BundleException
+     * @throws InvalidSyntaxException
+     */
+    RemoteServiceReference[] getServiceReferences(String filter) throws RemoteException, BundleException, InvalidSyntaxException;
+    
+    /**
+     * Fetch an array of {@link RemoteServiceReference} to interact with them, this is a snapshot of the current state and must be recalled to update
+     * @param filter
+     * @param timeout wait the specified amout of time in relation to the timeunit for a service matchign the filter to appear
+     * @return
+     * @throws RemoteException
+     * @throws BundleException
+     * @throws InvalidSyntaxException
+     */
+    RemoteServiceReference[] getServiceReferences(String filter, long timeout, TimeUnit timeUnit) throws RemoteException, BundleException, InvalidSyntaxException;
+    
     
     /**
      * Sets the framework startlevel.

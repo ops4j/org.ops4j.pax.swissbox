@@ -40,91 +40,84 @@ import org.ops4j.pax.swissbox.tracker.ServiceLookup;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.service.startlevel.StartLevel;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * Implements the {@link RemoteFramework} interface by instantiating a local {@link Framework},
- * exporting it via an RMI registry and delegating all remote calls to the local framework.
+ * Implements the {@link RemoteFramework} interface by instantiating a local
+ * {@link Framework}, exporting it via an RMI registry and delegating all remote
+ * calls to the local framework.
  * 
  * @author Harald Wellmann
  */
-public class RemoteFrameworkImpl implements RemoteFramework
-{
-    private static Logger LOG = Logger.getLogger( RemoteFrameworkImpl.class.getName() );
+public class RemoteFrameworkImpl implements RemoteFramework {
 
-    private Framework framework;
-    private Registry registry;
-    private String name;
+    private static Logger LOG = Logger.getLogger(RemoteFrameworkImpl.class.getName());
 
-    public RemoteFrameworkImpl( Map<String, String> frameworkProperties ) throws RemoteException,
-        AlreadyBoundException, BundleException
-    {
+    private Framework     framework;
+    private Registry      registry;
+    private String        name;
+
+    public RemoteFrameworkImpl(Map<String, String> frameworkProperties) throws RemoteException, AlreadyBoundException, BundleException {
         FrameworkFactory frameworkFactory = findFrameworkFactory();
-        this.framework = frameworkFactory.newFramework( frameworkProperties );
+        this.framework = frameworkFactory.newFramework(frameworkProperties);
 
         export();
     }
 
-    private void export() throws RemoteException, AccessException
-    {
-        String port = System.getProperty( RMI_PORT_KEY, "1099" );
-        name = System.getProperty( RMI_NAME_KEY );
-        registry = LocateRegistry.getRegistry( Integer.parseInt( port ) );
+    private void export() throws RemoteException, AccessException {
+        String port = System.getProperty(RMI_PORT_KEY, "1099");
+        name = System.getProperty(RMI_NAME_KEY);
+        registry = LocateRegistry.getRegistry(Integer.parseInt(port));
         URL location1 = getClass().getProtectionDomain().getCodeSource().getLocation();
         URL location2 = Bundle.class.getProtectionDomain().getCodeSource().getLocation();
         URL location3 = ServiceLookup.class.getProtectionDomain().getCodeSource().getLocation();
-        System.setProperty( "java.rmi.server.codebase", location1 + " " + location2 + " " + location3);
-        Remote remote = UnicastRemoteObject.exportObject( this, 0 );
-        registry.rebind( name, remote );
+        System.setProperty("java.rmi.server.codebase", location1 + " " + location2 + " " + location3);
+        Remote remote = UnicastRemoteObject.exportObject(this, 0);
+        registry.rebind(name, remote);
     }
 
-    public void init() throws RemoteException, BundleException
-    {
+    public void init() throws RemoteException, BundleException {
         framework.init();
     }
 
-    public void start() throws RemoteException, BundleException
-    {
+    public void start() throws RemoteException, BundleException {
         framework.start();
     }
 
-    public void stop() throws RemoteException, BundleException
-    {
+    public void stop() throws RemoteException, BundleException {
         framework.stop();
-        try
-        {
-            registry.unbind( name );
+        try {
+            registry.unbind(name);
+        } catch (NotBoundException exc) {
+            throw new IllegalStateException(exc);
         }
-        catch ( NotBoundException exc )
-        {
-            throw new IllegalStateException( exc );
-        }
-        UnicastRemoteObject.unexportObject( this, true );
+        UnicastRemoteObject.unexportObject(this, true);
     }
 
-    public long installBundle( String bundleUrl ) throws RemoteException, BundleException
-    {
-        Bundle bundle = framework.getBundleContext().installBundle( bundleUrl );
+    public long installBundle(String bundleUrl) throws RemoteException, BundleException {
+        Bundle bundle = framework.getBundleContext().installBundle(bundleUrl);
         return bundle.getBundleId();
     }
-    
-    public long installBundle(String bundleUrl, boolean autostart, int startLevel) throws RemoteException, BundleException 
-    {
+
+    public long installBundle(String bundleUrl, boolean autostart, int startLevel) throws RemoteException, BundleException {
         //Install the bundle
         BundleContext bundleContext = framework.getBundleContext();
-        Bundle bundle = bundleContext.installBundle( bundleUrl );
+        Bundle bundle = bundleContext.installBundle(bundleUrl);
         setupBundle(autostart, startLevel, bundleContext, bundle);
         return bundle.getBundleId();
     }
-    
-    public long installBundle(String bundleLocation, byte[] bundleData, boolean autostart, int startLevel) throws RemoteException, BundleException 
-    {
+
+    public long installBundle(String bundleLocation, byte[] bundleData, boolean autostart, int startLevel) throws RemoteException, BundleException {
         BundleContext bundleContext = framework.getBundleContext();
-        Bundle bundle = bundleContext.installBundle( bundleLocation, new ByteArrayInputStream( bundleData ) );
+        Bundle bundle = bundleContext.installBundle(bundleLocation, new ByteArrayInputStream(bundleData));
         setupBundle(autostart, startLevel, bundleContext, bundle);
         return bundle.getBundleId();
     }
@@ -139,178 +132,211 @@ public class RemoteFrameworkImpl implements RemoteFramework
         }
     }
 
-    public long installBundle( String bundleLocation, byte[] bundleData ) throws RemoteException,
-        BundleException
-    {
-        Bundle bundle =
-            framework.getBundleContext().installBundle( bundleLocation,
-                new ByteArrayInputStream( bundleData ) );
+    public long installBundle(String bundleLocation, byte[] bundleData) throws RemoteException, BundleException {
+        Bundle bundle = framework.getBundleContext().installBundle(bundleLocation, new ByteArrayInputStream(bundleData));
         return bundle.getBundleId();
     }
 
-    public void startBundle( long bundleId ) throws RemoteException, BundleException
-    {
-        framework.getBundleContext().getBundle( bundleId ).start();
+    public void startBundle(long bundleId) throws RemoteException, BundleException {
+        framework.getBundleContext().getBundle(bundleId).start();
     }
 
-    public void stopBundle( long bundleId ) throws RemoteException, BundleException
-    {
-        framework.getBundleContext().getBundle( bundleId ).stop();
+    public void stopBundle(long bundleId) throws RemoteException, BundleException {
+        framework.getBundleContext().getBundle(bundleId).stop();
     }
 
-    public void setBundleStartLevel( long bundleId, int startLevel ) throws RemoteException,
-        BundleException
-    {
+    public void setBundleStartLevel(long bundleId, int startLevel) throws RemoteException, BundleException {
         BundleContext bc = framework.getBundleContext();
-        StartLevel sl = ServiceLookup.getService( bc, StartLevel.class );
-        Bundle bundle = bc.getBundle( bundleId );
-        sl.setBundleStartLevel( bundle, startLevel );
+        StartLevel sl = ServiceLookup.getService(bc, StartLevel.class);
+        Bundle bundle = bc.getBundle(bundleId);
+        sl.setBundleStartLevel(bundle, startLevel);
     }
 
-    public void uninstallBundle( long id ) throws RemoteException, BundleException
-    {
-        framework.getBundleContext().getBundle( id ).uninstall();
+    public void uninstallBundle(long id) throws RemoteException, BundleException {
+        framework.getBundleContext().getBundle(id).uninstall();
     }
 
-    public FrameworkFactory findFrameworkFactory()
-    {
-        ServiceLoader<FrameworkFactory> loader = ServiceLoader.load( FrameworkFactory.class );
+    public FrameworkFactory findFrameworkFactory() {
+        ServiceLoader<FrameworkFactory> loader = ServiceLoader.load(FrameworkFactory.class);
         FrameworkFactory factory = loader.iterator().next();
         return factory;
     }
 
-    private static Map<String, String> buildFrameworkProperties( String[] args )
-    {        
+    private static Map<String, String> buildFrameworkProperties(String[] args) {
         Map<String, String> props = new HashMap<String, String>();
         for (String arg : args) {
             if (arg.startsWith("-F")) {
                 int eq = arg.indexOf("=");
                 if (eq == -1) {
-                    String key = arg.substring( 2 );
-                    props.put( key, null );
+                    String key = arg.substring(2);
+                    props.put(key, null);
+                } else {
+                    String key = arg.substring(2, eq);
+                    String value = arg.substring(eq + 1);
+                    props.put(key, value);
                 }
-                else {
-                    String key = arg.substring( 2, eq );
-                    String value = arg.substring ( eq+1 );
-                    props.put( key, value );                    
-                }
-            }
-            else {
-                LOG.warning( "ignoring unknown argument " + arg );
+            } else {
+                LOG.warning("ignoring unknown argument " + arg);
             }
         }
         return props;
     }
 
-    public void callService( String filter, String methodName ) throws RemoteException,
-        BundleException
-    {
-        try
-        {
-            LOG.fine( "acquiring service " + filter );
+    public void callService(String filter, String methodName) throws RemoteException, BundleException {
+        try {
+            LOG.fine("acquiring service " + filter);
             BundleContext bc = framework.getBundleContext();
-            Object service = ServiceLookup.getServiceByFilter( bc, filter );
+            Object service = ServiceLookup.getServiceByFilter(bc, filter);
             Class<? extends Object> klass = service.getClass();
             Method method;
-            try
-            {
-                method = klass.getMethod( methodName, Object[].class );
-                LOG.fine( "calling service method " + method );
-                method.invoke( service, (Object) new Object[]{} );
+            try {
+                method = klass.getMethod(methodName, Object[].class);
+                LOG.fine("calling service method " + method);
+                method.invoke(service, (Object) new Object[] {});
+            } catch (NoSuchMethodException e) {
+                method = klass.getMethod(methodName);
+                LOG.fine("calling service method  " + method);
+                method.invoke(service);
             }
-            catch ( NoSuchMethodException e )
-            {
-                method = klass.getMethod( methodName );
-                LOG.fine( "calling service method  " + method );
-                method.invoke( service );
-            }
-        }
-        catch ( SecurityException exc )
-        {
-            throw new IllegalStateException( exc );
-        }
-        catch ( NoSuchMethodException exc )
-        {
-            throw new IllegalStateException( exc );
-        }
-        catch ( IllegalArgumentException exc )
-        {
-            throw new IllegalStateException( exc );
-        }
-        catch ( IllegalAccessException exc )
-        {
-            throw new IllegalStateException( exc );
-        }
-        catch ( InvocationTargetException exc )
-        {
-            throw new IllegalStateException( exc );
+        } catch (SecurityException exc) {
+            throw new IllegalStateException(exc);
+        } catch (NoSuchMethodException exc) {
+            throw new IllegalStateException(exc);
+        } catch (IllegalArgumentException exc) {
+            throw new IllegalStateException(exc);
+        } catch (IllegalAccessException exc) {
+            throw new IllegalStateException(exc);
+        } catch (InvocationTargetException exc) {
+            throw new IllegalStateException(exc);
         }
     }
 
-    public void setFrameworkStartLevel( int startLevel )
-    {
+    public void setFrameworkStartLevel(int startLevel) {
         BundleContext bc = framework.getBundleContext();
-        StartLevel sl = ServiceLookup.getService( bc, StartLevel.class );
-        sl.setStartLevel( startLevel );
+        StartLevel sl = ServiceLookup.getService(bc, StartLevel.class);
+        sl.setStartLevel(startLevel);
     }
 
-    public boolean setFrameworkStartLevel( final int startLevel, long timeout )
-        throws RemoteException
-    {
+    public boolean setFrameworkStartLevel(final int startLevel, long timeout) throws RemoteException {
         BundleContext bc = framework.getBundleContext();
-        final StartLevel sl = ServiceLookup.getService( bc, StartLevel.class );
-        final CountDownLatch latch = new CountDownLatch( 1 );
-        bc.addFrameworkListener( new FrameworkListener()
-        {
+        final StartLevel sl = ServiceLookup.getService(bc, StartLevel.class);
+        final CountDownLatch latch = new CountDownLatch(1);
+        bc.addFrameworkListener(new FrameworkListener() {
 
-            public void frameworkEvent( FrameworkEvent frameworkEvent )
-            {
-                switch( frameworkEvent.getType() )
-                {
+            public void frameworkEvent(FrameworkEvent frameworkEvent) {
+                switch (frameworkEvent.getType()) {
                     case FrameworkEvent.STARTLEVEL_CHANGED:
-                        if( sl.getStartLevel() == startLevel )
-                        {
+                        if (sl.getStartLevel() == startLevel) {
                             latch.countDown();
                         }
                 }
             }
-        } );
-        sl.setStartLevel( startLevel );
+        });
+        sl.setStartLevel(startLevel);
         boolean startLevelReached;
-        try
-        {
-            startLevelReached = latch.await( timeout, TimeUnit.MILLISECONDS );
+        try {
+            startLevelReached = latch.await(timeout, TimeUnit.MILLISECONDS);
             return startLevelReached;
-        }
-        catch ( InterruptedException exc )
-        {
-            throw new RemoteException( "interrupted while waiting", exc );
+        } catch (InterruptedException exc) {
+            throw new RemoteException("interrupted while waiting", exc);
         }
     }
 
-    public void waitForState( long bundleId, int state, long timeoutInMillis )
-        throws RemoteException, BundleException
-    {
-        throw new UnsupportedOperationException( "not yet implemented" );
+    public void waitForState(long bundleId, int state, long timeoutInMillis) throws RemoteException, BundleException {
+        throw new UnsupportedOperationException("not yet implemented");
     }
 
-    public static void main( String[] args ) throws RemoteException, AlreadyBoundException,
-        BundleException, InterruptedException
-    {
-        LOG.fine( "starting RemoteFrameworkImpl" );
-        Map<String, String> props = buildFrameworkProperties( args );
-        RemoteFrameworkImpl impl = new RemoteFrameworkImpl( props );
+    public static void main(String[] args) throws RemoteException, AlreadyBoundException, BundleException, InterruptedException {
+        LOG.fine("starting RemoteFrameworkImpl");
+        Map<String, String> props = buildFrameworkProperties(args);
+        RemoteFrameworkImpl impl = new RemoteFrameworkImpl(props);
         impl.start();
     }
 
-    public int getBundleState( long bundleId ) throws RemoteException, BundleException
-    {
-        Bundle bundle = framework.getBundleContext().getBundle( bundleId );
-        if( bundle == null )
-        {
-            throw new BundleException( String.format( "bundle [%d] does not exist", bundleId ) );
+    public int getBundleState(long bundleId) throws RemoteException, BundleException {
+        Bundle bundle = framework.getBundleContext().getBundle(bundleId);
+        if (bundle == null) {
+            throw new BundleException(String.format("bundle [%d] does not exist", bundleId));
         }
         return bundle.getState();
     }
+
+    public RemoteServiceReference[] getServiceReferences(String filter) throws RemoteException, BundleException, InvalidSyntaxException {
+        return getServiceReferences(filter, -1, null);
+    }
+
+    public RemoteServiceReference[] getServiceReferences(String filter, long timeout, TimeUnit timeUnit) throws RemoteException, BundleException,
+            InvalidSyntaxException {
+        BundleContext bundleContext = framework.getBundleContext();
+        ServiceReference[] serviceReferences = bundleContext.getAllServiceReferences(null, filter);
+        if (serviceReferences == null) {
+            if (timeout < 0) {
+                return new RemoteServiceReference[0];
+            }
+            ServiceTracker tracker = new ServiceTracker(bundleContext, bundleContext.createFilter(filter), null);
+            tracker.open(true);
+            try {
+                tracker.waitForService(timeUnit.toMillis(timeout));
+                serviceReferences = tracker.getServiceReferences();
+                if (serviceReferences == null) {
+                    throw new IllegalStateException("services vanished to fast...");
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException("interrupted!", e);
+            } finally {
+                tracker.close();
+            }
+        }
+        RemoteServiceReference[] remoteRefs = new RemoteServiceReference[serviceReferences.length];
+        for (int i = 0; i < remoteRefs.length; i++) {
+            ServiceReference reference = serviceReferences[i];
+            final String serviceFilter = "(&(" + Constants.SERVICE_ID + "=" + reference.getProperty(Constants.SERVICE_ID) + ")" + filter + ")";
+            final String[] keys = reference.getPropertyKeys();
+            final Map<String, Object> values = new HashMap<String, Object>();
+            for (String key : keys) {
+                values.put(key, reference.getProperty(key));
+            }
+            remoteRefs[i] = new RemoteServiceReferenceImplementation(values, serviceFilter);
+        }
+        return remoteRefs;
+    }
+
+    public Object invokeMethodOnService(RemoteServiceReference reference, String methodName, Object... args) throws RemoteException, Exception {
+        Class<?>[] argTypes = new Class<?>[args.length];
+        for (int i = 0; i < argTypes.length; i++) {
+            Object object = args[i];
+            if (object == null) {
+                throw new IllegalArgumentException("argument "
+                        + i
+                        + " is null, use invokeMethodOnService(RemoteServiceReference, String, Class[], Object[]) if you want to call a service with null argument values");
+            }
+            argTypes[i] = object.getClass();
+        }
+        return invokeMethodOnService(reference, methodName, argTypes, args);
+    }
+
+    public Object invokeMethodOnService(RemoteServiceReference reference, String methodName, Class<?>[] parameterTypes, Object[] args) throws RemoteException,
+            Exception {
+        BundleContext bundleContext = framework.getBundleContext();
+        ServiceReference[] allServiceReferences = bundleContext.getAllServiceReferences(null, reference.getServiceFilter());
+        if (allServiceReferences == null || allServiceReferences.length == 0) {
+            throw new IllegalStateException("service is no longer present");
+        }
+        if (allServiceReferences.length > 1) {
+            throw new AssertionError("more than one service is matching the reference, this should never happen");
+        }
+        Object service = bundleContext.getService(allServiceReferences[0]);
+        if (service == null) {
+            throw new IllegalStateException("service has vanished between calls");
+        }
+        try {
+            Method method = service.getClass().getMethod(methodName, parameterTypes);
+            return method.invoke(service, args);
+        } finally {
+            bundleContext.ungetService(allServiceReferences[0]);
+        }
+    }
+
+
 
 }
