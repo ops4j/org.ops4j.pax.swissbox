@@ -3,7 +3,7 @@
     <parent>
         <artifactId>swissbox</artifactId>
         <groupId>org.ops4j.pax</groupId>
-        <version>1.6.0-SNAPSHOT</version>
+        <version>1.7.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <groupId>org.ops4j.pax.swissbox</groupId>
@@ -19,6 +19,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.ops4j.pax.swissbox</groupId>
+            <artifactId>pax-swissbox-tracker</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.ops4j.base</groupId>
             <artifactId>ops4j-base-exec</artifactId>

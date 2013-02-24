@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Alin Dreghiciu.
+ * Copyright 2012 Alin Dreghiciu, Harald Wellmann
  *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
@@ -23,11 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.ops4j.lang.NullArgumentException;
 import org.ops4j.pax.swissbox.lifecycle.AbstractLifecycle;
@@ -40,22 +35,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Watches bundles life cycle events. Once a bundle becomes active a scanning process will be performed and each bundle
- * resource found during scanning will be registered. Once a bundle stops the registered resources for that bundle will
- * be unregistered.
- * If the bundle watcher is stopped all bundle resources will be unregistered.
- *
+ * Watches bundles life cycle events. Once a bundle becomes active a scanning process will be
+ * performed and each bundle resource found during scanning will be registered. Once a bundle stops
+ * the registered resources for that bundle will be unregistered. If the bundle watcher is stopped
+ * all bundle resources will be unregistered.
+ * <p>
+ * All actions of this watcher are performed synchronously on the bundle event dispatcher thread
+ * of the OSGi framework.
+ * 
  * @author Alin Dreghiciu
- * @since October 14, 2007
+ * @author Harald Wellmann
+ * @since 1.5.1
  */
-public class BundleWatcher<T>
-    extends AbstractLifecycle
+public class SynchronousBundleWatcher<T>
+        extends AbstractLifecycle
 {
 
     /**
      * Logger.
      */
-    private static final Logger LOG = LoggerFactory.getLogger( BundleWatcher.class );
+    private static final Logger LOG = LoggerFactory.getLogger( SynchronousBundleWatcher.class );
 
     /**
      * Bundle context in use. Constructor parameter. Cannot be null.
@@ -74,36 +73,31 @@ public class BundleWatcher<T>
      */
     private Map<Bundle, List<T>> m_mappings;
     /**
-     * Bundle listener for bundle events. Cannot be null. 
+     * Bundle listener for bundle events. Cannot be null.
      */
     private BundleListener m_bundleListener;
 
-	/**
-	 * A Service for running multithreaded tasks.
-	 */
-	private final ExecutorService executorService;
-
     /**
      * Create a new bundle watcher.
-     *
+     * 
      * @param context a bundle context. Cannot be null.
      * @param scanner a bundle scanner. Cannot be null.
      */
-    public BundleWatcher( final BundleContext context, final BundleScanner<T> scanner )
+    public SynchronousBundleWatcher( final BundleContext context, final BundleScanner<T> scanner )
     {
         this( context, scanner, (BundleObserver<T>[]) null );
     }
 
     /**
      * Create a new bundle watcher.
-     *
-     * @param context   a bundle context. Cannot be null.
-     * @param scanner   a bundle scanner. Cannot be null.
+     * 
+     * @param context a bundle context. Cannot be null.
+     * @param scanner a bundle scanner. Cannot be null.
      * @param observers list of observers
      */
-    public BundleWatcher( final BundleContext context,
-                          final BundleScanner<T> scanner,
-                          final BundleObserver<T>... observers )
+    public SynchronousBundleWatcher( final BundleContext context,
+            final BundleScanner<T> scanner,
+            final BundleObserver<T>... observers )
     {
         LOG.debug( "Creating bundle watcher with scanner [" + scanner + "]..." );
 
@@ -117,30 +111,7 @@ public class BundleWatcher<T>
         {
             m_observers.addAll( Arrays.asList( observers ) );
         }
-        
-        executorService = Executors.newScheduledThreadPool(3, new ThreadFactory() {
-
-			private final AtomicInteger count = new AtomicInteger();
-			
-			public Thread newThread(Runnable r) {
-				final Thread t = Executors.defaultThreadFactory().newThread(r);
-		        t.setName("BundleWatcher" + ": " + count.incrementAndGet());
-		        t.setDaemon(true);
-		        return t;
-			}
-		});
     }
-    
-    void destroy() {
-    	executorService.shutdown();
-        // wait for the queued tasks to execute
-        try {
-        	executorService.awaitTermination(60, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            // ignore
-        }
-    }
-
 
     /**
      * Registers a listener for bundle events and scans already active bundles.
@@ -167,7 +138,7 @@ public class BundleWatcher<T>
             }
 
         }
-        );
+            );
 
         // scan already started bundles
         Bundle[] bundles = m_context.getBundles();
@@ -190,7 +161,8 @@ public class BundleWatcher<T>
     protected void onStop()
     {
         m_context.removeBundleListener( m_bundleListener );
-        final Bundle[] toBeRemoved = m_mappings.keySet().toArray( new Bundle[m_mappings.keySet().size()] );
+        final Bundle[] toBeRemoved =
+            m_mappings.keySet().toArray( new Bundle[m_mappings.keySet().size()] );
         for( Bundle bundle : toBeRemoved )
         {
             unregister( bundle );
@@ -201,9 +173,9 @@ public class BundleWatcher<T>
     }
 
     /**
-     * Scans entries using the bundle scanner and registers the result of scanning process.
-     * Then notify the observers. If an exception appears during notification, it is ignored.
-     *
+     * Scans entries using the bundle scanner and registers the result of scanning process. Then
+     * notify the observers. If an exception appears during notification, it is ignored.
+     * 
      * @param bundle registered bundle
      */
     private void register( final Bundle bundle )
@@ -214,42 +186,30 @@ public class BundleWatcher<T>
         if( resources != null && resources.size() > 0 )
         {
             LOG.debug( "Found resources " + resources );
-		            for( final BundleObserver<T> observer : m_observers )
-		            {
-		                try
-		                {
-		                	//here the executor service completes the job in an extra thread. 
-		                	executorService.submit(new Runnable() {
-		                		public void run() {
-		                		    try 
-		                		    {
-		                		        observer.addingEntries( bundle, Collections.unmodifiableList( resources ) );
-		                		    }
-		                		    catch (Throwable t)
-		                		    {
-		                		        LOG.error( "Exception in executor thread", t );
-		                		    }
-		                		}
-		                	});
-		                }
-		                catch( Throwable ignore )
-		                {
-		                    LOG.error( "Ignored exception during register", ignore );
-		                }
-		            }
+            for( final BundleObserver<T> observer : m_observers )
+            {
+                try
+                {
+                    observer.addingEntries( bundle, Collections.unmodifiableList( resources ) );
+                }
+                catch ( Throwable t )
+                {
+                    LOG.error( "Ignored exception during register", t );
+                }
+            }
         }
     }
 
     /**
-     * Un-registers each entry from the unregistered bundle by first notifying the observers. If an exception appears
-     * during notification, it is ignored.
-     *
+     * Un-registers each entry from the unregistered bundle by first notifying the observers. If an
+     * exception appears during notification, it is ignored.
+     * 
      * @param bundle the un-registred bundle
      */
     private void unregister( final Bundle bundle )
     {
-    	if (bundle == null)
-    		return; // no need to go any further, system probably stopped. 
+        if( bundle == null )
+            return; // no need to go any further, system probably stopped.
         LOG.debug( "Releasing bundle [" + bundle.getSymbolicName() + "]" );
         final List<T> resources = m_mappings.get( bundle );
         if( resources != null && resources.size() > 0 )
@@ -261,7 +221,7 @@ public class BundleWatcher<T>
                 {
                     observer.removingEntries( bundle, Collections.unmodifiableList( resources ) );
                 }
-                catch( Throwable ignore )
+                catch ( Throwable ignore )
                 {
                     LOG.error( "Ignored exception during un-register", ignore );
                 }
@@ -269,5 +229,4 @@ public class BundleWatcher<T>
         }
         m_mappings.remove( bundle );
     }
-
 }

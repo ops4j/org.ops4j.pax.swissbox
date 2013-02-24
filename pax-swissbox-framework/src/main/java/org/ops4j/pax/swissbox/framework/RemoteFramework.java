@@ -19,8 +19,10 @@ package org.ops4j.pax.swissbox.framework;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.concurrent.TimeUnit;
 
 import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.launch.Framework;
 import org.osgi.service.startlevel.StartLevel;
 
@@ -72,6 +74,33 @@ public interface RemoteFramework extends Remote
     long installBundle(String bundleUrl)
             throws RemoteException, BundleException;
 
+    
+    /**
+     * Installs a bundle remotely, autostart it if requested and set its startlevel
+     *
+     * @param bundleUrl url of the bundle to be installed. The url must be accessible from the remote framework.
+     * @param autostart if <code>true</code> start the bundle after install otherwhise just set the startlevel
+     * @param startLevel set the given startlevel for this bundle after it is installed
+     * @return bundle id of the installed bundle
+     * @throws RemoteException - Remote communication related exception (mandatory by RMI)
+     * @throws BundleException - Re-thrown from installing the bundle
+     */
+    long installBundle(String bundleUrl, boolean autostart, int startLevel)
+            throws RemoteException, BundleException;
+    
+    /**
+     * Installs a bundle remotely, given the bundle content, autostart it if requested and set its startlevel
+     *
+     * @param bundleUrl url of the bundle to be installed. The url must be accessible from the remote framework.
+     * @param autostart if <code>true</code> start the bundle after install otherwhise just set the startlevel
+     * @param startLevel set the given startlevel for this bundle after it is installed
+     * @return bundle id of the installed bundle
+     * @throws RemoteException - Remote communication related exception (mandatory by RMI)
+     * @throws BundleException - Re-thrown from installing the bundle
+     */
+    long installBundle(String bundleLocation, byte[] bundle, boolean autostart, int startLevel)
+            throws RemoteException, BundleException;
+    
     /**
      * Installs a bundle remotely, given the bundle content.
      *
@@ -139,6 +168,46 @@ public interface RemoteFramework extends Remote
     void callService(String filter, String methodName) throws RemoteException, BundleException;
     
     /**
+     * Invokes a method on this reference in the remote framework
+     * 
+     * @param name
+     * @param args
+     * @return
+     */
+    Object invokeMethodOnService(RemoteServiceReference reference, String methodName, Object... args) throws RemoteException, Exception;
+    
+    /**
+     * Invokes a method on this reference in the remote framework
+     * 
+     * @param name
+     * @param args
+     * @return
+     */
+    Object invokeMethodOnService(RemoteServiceReference reference, String methodName, Class<?>[] parameterTypes, Object[] args) throws RemoteException, Exception;
+    
+    /**
+     * Fetch an array of {@link RemoteServiceReference} to interact with them, this is a snapshot of the current state and must be recalled to update
+     * @param filter
+     * @return
+     * @throws RemoteException
+     * @throws BundleException
+     * @throws InvalidSyntaxException
+     */
+    RemoteServiceReference[] getServiceReferences(String filter) throws RemoteException, BundleException, InvalidSyntaxException;
+    
+    /**
+     * Fetch an array of {@link RemoteServiceReference} to interact with them, this is a snapshot of the current state and must be recalled to update
+     * @param filter
+     * @param timeout wait the specified amout of time in relation to the timeunit for a service matchign the filter to appear
+     * @return
+     * @throws RemoteException
+     * @throws BundleException
+     * @throws InvalidSyntaxException
+     */
+    RemoteServiceReference[] getServiceReferences(String filter, long timeout, TimeUnit timeUnit) throws RemoteException, BundleException, InvalidSyntaxException;
+    
+    
+    /**
      * Sets the framework startlevel.
      * @see {@link StartLevel#setStartLevel(int)}
      * @param startLevel
@@ -146,5 +215,24 @@ public interface RemoteFramework extends Remote
      */
     void setFrameworkStartLevel(int startLevel) throws RemoteException;
     
-
+    /**
+     * Sets the framework startlevel and waits for at most the given timeout (in ms) for the
+     * startlevel to be reached. 
+     * @see {@link StartLevel#setStartLevel(int)}
+     * @param startLevel
+     * @throws RemoteException
+     * @return true if the start level has been reached within the given timeout
+     */
+    boolean setFrameworkStartLevel(int startLevel, long timeout) 
+            throws RemoteException;
+    
+    /**
+     * Returns the state of the bundle with the given ID.
+     * @see {@link org.osgi.framework.Bundle#getState()}
+     * @param bundleId bundle ID
+     * @return state of bundle
+     * @throws RemoteException
+     * @throws BundleException if there is no bundle with the given ID
+     */
+    int getBundleState(long bundleId) throws RemoteException, BundleException;
 }
