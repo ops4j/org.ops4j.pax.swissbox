@@ -76,35 +76,36 @@ public interface RemoteFramework extends Remote
 
     
     /**
-     * Installs a bundle remotely, autostart it if requested and set its startlevel
+     * Installs a bundle remotely, sets its start level and optionally starts it.
      *
      * @param bundleUrl url of the bundle to be installed. The url must be accessible from the remote framework.
-     * @param autostart if <code>true</code> start the bundle after install otherwhise just set the startlevel
-     * @param startLevel set the given startlevel for this bundle after it is installed
+     * @param start indicates whether the bundle will be started
+     * @param startLevel start level for this bundle
      * @return bundle id of the installed bundle
      * @throws RemoteException - Remote communication related exception (mandatory by RMI)
      * @throws BundleException - Re-thrown from installing the bundle
      */
-    long installBundle(String bundleUrl, boolean autostart, int startLevel)
+    long installBundle(String bundleUrl, boolean start, int startLevel)
             throws RemoteException, BundleException;
     
     /**
      * Installs a bundle remotely, given the bundle content, autostart it if requested and set its startlevel
      *
-     * @param bundleUrl url of the bundle to be installed. The url must be accessible from the remote framework.
-     * @param autostart if <code>true</code> start the bundle after install otherwhise just set the startlevel
-     * @param startLevel set the given startlevel for this bundle after it is installed
+     * @param bundleLocation The location identifier of the bundle to install
+     * @param bundleData  bundle content as a byte array
+     * @param start indicates whether the bundle will be started
+     * @param startLevel start level for this bundle
      * @return bundle id of the installed bundle
      * @throws RemoteException - Remote communication related exception (mandatory by RMI)
      * @throws BundleException - Re-thrown from installing the bundle
      */
-    long installBundle(String bundleLocation, byte[] bundle, boolean autostart, int startLevel)
+    long installBundle(String bundleLocation, byte[] bundleData, boolean start, int startLevel)
             throws RemoteException, BundleException;
     
     /**
      * Installs a bundle remotely, given the bundle content.
      *
-     * @param bundleLocation bundle location
+     * @param bundleLocation The location identifier of the bundle to install
      * @param bundle         bundle content as a byte array
      * @return bundle id of the installed bundle
      * @throws RemoteException - Remote communication related exception (mandatory by RMI)
@@ -164,7 +165,15 @@ public interface RemoteFramework extends Remote
      */
     void uninstallBundle(long id)
             throws RemoteException, BundleException;
-    
+    /**
+     * Looks up a service matching the given filter and invokes a service method with the given
+     * name. The method is expected to have either a parameter of type Object[] or no parameters.
+     * It will be invoked with an empty argument list.  
+     * @param filter  LDAP service filter
+     * @param methodName service method name
+     * @throws RemoteException  - Remote communication related exception (mandatory by RMI)
+     * @throws BundleException  - If bundle cannot be found
+     */
     void callService(String filter, String methodName) throws RemoteException, BundleException;
     
     /**

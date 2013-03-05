@@ -107,27 +107,25 @@ public class RemoteFrameworkImpl implements RemoteFramework {
         return bundle.getBundleId();
     }
 
-    public long installBundle(String bundleUrl, boolean autostart, int startLevel) throws RemoteException, BundleException {
-        //Install the bundle
+    public long installBundle(String bundleUrl, boolean start, int startLevel) throws RemoteException, BundleException {
         BundleContext bundleContext = framework.getBundleContext();
         Bundle bundle = bundleContext.installBundle(bundleUrl);
-        setupBundle(autostart, startLevel, bundleContext, bundle);
+        setupBundle(start, startLevel, bundleContext, bundle);
         return bundle.getBundleId();
     }
 
-    public long installBundle(String bundleLocation, byte[] bundleData, boolean autostart, int startLevel) throws RemoteException, BundleException {
+    public long installBundle(String bundleLocation, byte[] bundleData, boolean start, int startLevel) throws RemoteException, BundleException {
         BundleContext bundleContext = framework.getBundleContext();
         Bundle bundle = bundleContext.installBundle(bundleLocation, new ByteArrayInputStream(bundleData));
-        setupBundle(autostart, startLevel, bundleContext, bundle);
+        setupBundle(start, startLevel, bundleContext, bundle);
         return bundle.getBundleId();
     }
 
-    private static void setupBundle(boolean autostart, int startLevel, BundleContext bundleContext, Bundle bundle) throws BundleException {
-        //set the requested start level
+    private static void setupBundle(boolean start, int startLevel, BundleContext bundleContext, Bundle bundle) throws BundleException {
         StartLevel sl = ServiceLookup.getService(bundleContext, StartLevel.class);
         sl.setBundleStartLevel(bundle, startLevel);
-        //start it if requested
-        if (autostart) {
+
+        if (start) {
             bundle.start();
         }
     }
@@ -211,10 +209,8 @@ public class RemoteFrameworkImpl implements RemoteFramework {
         }
     }
 
-    public void setFrameworkStartLevel(int startLevel) {
-        BundleContext bc = framework.getBundleContext();
-        StartLevel sl = ServiceLookup.getService(bc, StartLevel.class);
-        sl.setStartLevel(startLevel);
+    public void setFrameworkStartLevel(int startLevel) throws RemoteException {
+        setFrameworkStartLevel(startLevel, 0);
     }
 
     public boolean setFrameworkStartLevel(final int startLevel, long timeout) throws RemoteException {
@@ -246,13 +242,6 @@ public class RemoteFrameworkImpl implements RemoteFramework {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
-    public static void main(String[] args) throws RemoteException, AlreadyBoundException, BundleException, InterruptedException {
-        LOG.fine("starting RemoteFrameworkImpl");
-        Map<String, String> props = buildFrameworkProperties(args);
-        RemoteFrameworkImpl impl = new RemoteFrameworkImpl(props);
-        impl.start();
-    }
-
     public int getBundleState(long bundleId) throws RemoteException, BundleException {
         Bundle bundle = framework.getBundleContext().getBundle(bundleId);
         if (bundle == null) {
@@ -279,7 +268,7 @@ public class RemoteFrameworkImpl implements RemoteFramework {
                 tracker.waitForService(timeUnit.toMillis(timeout));
                 serviceReferences = tracker.getServiceReferences();
                 if (serviceReferences == null) {
-                    throw new IllegalStateException("services vanished to fast...");
+                    throw new IllegalStateException("services vanished too fast...");
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException("interrupted!", e);
@@ -337,6 +326,10 @@ public class RemoteFrameworkImpl implements RemoteFramework {
         }
     }
 
-
-
+    public static void main(String[] args) throws RemoteException, AlreadyBoundException, BundleException, InterruptedException {
+        LOG.fine("starting RemoteFrameworkImpl");
+        Map<String, String> props = buildFrameworkProperties(args);
+        RemoteFrameworkImpl impl = new RemoteFrameworkImpl(props);
+        impl.start();
+    }
 }
