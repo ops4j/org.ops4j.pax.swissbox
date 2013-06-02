@@ -13,10 +13,14 @@
     <artifactId>pax-swissbox-bnd</artifactId>
     <packaging>bundle</packaging>
 
-    <name>OPS4J Pax Swissbox :: Bnd Utils</name>
+    <name>OPS4J Pax Swissbox :: Bnd Utils</name>    
     <description>
         OPS4J Pax Swissbox - BND utilities.
     </description>
+    
+    <properties>
+        <bundle.symbolicName>org.ops4j.pax.swissbox.bnd</bundle.symbolicName>  
+    </properties>
 
     <build>
         <plugins>
