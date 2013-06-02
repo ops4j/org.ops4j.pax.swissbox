@@ -22,21 +22,20 @@ import java.util.Map;
 import org.osgi.framework.ServiceReference;
 
 /**
- * represents a {@link ServiceReference} in the {@link RemoteFramework}
+ * Represents a {@link ServiceReference} in the {@link RemoteFramework}.
  */
 public interface RemoteServiceReference
 {
 
     /**
-     * Fetch the properties of this service reference
-     * 
-     * @param name
-     * @return
+     * Fetches the properties of this service reference.
+     * @return service properties.
      */
-    public Map<String, Object> getProperties( String name );
+    public Map<String, Object> getProperties();
 
     /**
-     * @return a filter string that identifies this service in the remote service registry
+     * Gets a filter string that identifies this service in the remote service registry.
+     * @return LDAP filter string
      */
     public String getServiceFilter();
 }

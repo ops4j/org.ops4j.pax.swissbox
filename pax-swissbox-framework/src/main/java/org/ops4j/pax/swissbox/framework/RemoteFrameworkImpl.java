@@ -369,7 +369,7 @@ public class RemoteFrameworkImpl implements RemoteFramework
             {
                 values.put( key, reference.getProperty( key ) );
             }
-            remoteRefs[i] = new RemoteServiceReferenceImplementation( values, serviceFilter );
+            remoteRefs[i] = new RemoteServiceReferenceImpl( values, serviceFilter );
         }
         return remoteRefs;
     }

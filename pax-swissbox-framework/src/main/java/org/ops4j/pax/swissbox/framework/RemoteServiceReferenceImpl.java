@@ -20,7 +20,10 @@ package org.ops4j.pax.swissbox.framework;
 import java.io.Serializable;
 import java.util.Map;
 
-public final class RemoteServiceReferenceImplementation implements RemoteServiceReference,
+/**
+ * Default implementation of {@link RemoteServiceReference}.
+ */
+public final class RemoteServiceReferenceImpl implements RemoteServiceReference,
         Serializable
 {
 
@@ -28,13 +31,13 @@ public final class RemoteServiceReferenceImplementation implements RemoteService
     private final Map<String, Object> values;
     private final String serviceFilter;
 
-    RemoteServiceReferenceImplementation( Map<String, Object> values, String serviceFilter )
+    RemoteServiceReferenceImpl( Map<String, Object> values, String serviceFilter )
     {
         this.values = values;
         this.serviceFilter = serviceFilter;
     }
 
-    public Map<String, Object> getProperties( String name )
+    public Map<String, Object> getProperties()
     {
         return values;
     }
