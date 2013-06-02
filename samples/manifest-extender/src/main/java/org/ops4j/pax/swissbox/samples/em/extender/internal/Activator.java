@@ -50,6 +50,7 @@ public class Activator
      */
     private BundleWatcher<ManifestEntry> m_bundleWatcher;
 
+    @SuppressWarnings("unchecked")
     public void start( final BundleContext bundleContext )
         throws Exception
     {
