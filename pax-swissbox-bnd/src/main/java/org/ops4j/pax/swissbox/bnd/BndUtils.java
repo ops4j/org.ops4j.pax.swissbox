@@ -38,9 +38,9 @@ import org.ops4j.lang.Ops4jException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import aQute.lib.osgi.Analyzer;
-import aQute.lib.osgi.Constants;
-import aQute.lib.osgi.Jar;
+import aQute.bnd.osgi.Analyzer;
+import aQute.bnd.osgi.Constants;
+import aQute.bnd.osgi.Jar;
 
 /**
  * Wrapper over PeterK's bnd lib.
@@ -121,7 +121,16 @@ public class BndUtils
         LOG.trace( "Using instructions " + instructions );
 
         final Jar jar = new Jar( "dot", jarInputStream );
-        final Manifest manifest = jar.getManifest();
+        Manifest manifest = null;
+        try 
+        {
+            manifest = jar.getManifest();
+        }
+        catch ( Exception e )
+        {
+            throw new Ops4jException( e );
+        }
+                
 
         // Make the jar a bundle if it is not already a bundle
         if( manifest == null
@@ -183,7 +192,7 @@ public class BndUtils
                 {
                     jar.write( pout );
                 }
-                catch( IOException e )
+                catch( Exception e )
                 {
                     LOG.warn( "Bundle cannot be generated", e );
                 }
