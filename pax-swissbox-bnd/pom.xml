@@ -18,12 +18,6 @@
         OPS4J Pax Swissbox - BND utilities.
     </description>
 
-    <scm>
-    	<connection>scm:git:git://github.com/ops4j/org.ops4j.pax.swissbox.git</connection>
-    	<developerConnection>${release-paxswiss-altGitURL}</developerConnection>
-    	<url>http://github.com/ops4j/org.ops4j.pax.swissbox/tree/master</url>
-      <tag>HEAD</tag>
-  </scm>
     <build>
         <plugins>
             <plugin>
@@ -66,16 +60,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
-    <properties>
-    	<release-paxswissbox-altGitURL>scm:git:ssh://git@github.com/ops4j/org.ops4j.pax.swissbox.git</release-paxswissbox-altGitURL>
-    </properties>
-
 
 </project>
