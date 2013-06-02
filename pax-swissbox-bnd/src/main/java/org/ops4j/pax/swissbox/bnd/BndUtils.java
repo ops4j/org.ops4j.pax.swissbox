@@ -157,7 +157,8 @@ public class BndUtils
             checkMandatoryProperties( analyzer, jar, jarInfo );
             try
             {
-                analyzer.calcManifest();
+                Manifest newManifest = analyzer.calcManifest();
+                jar.setManifest( newManifest );
             }
             catch ( Exception e )
             {
