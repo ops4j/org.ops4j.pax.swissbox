@@ -1,49 +1,49 @@
-h1. Release paxwicket
+Pax Swissbox
+============
 
-If you have all required rights to release pax-wicket follow these steps:
+Thanks for looking into Pax Swissbox - a collection of utilities for OSGi applications, used by various other 
+OPS4J projects.
 
-1) add this into your ~/.m2/settings.xml
+This is the official source repository of the OPS4J Pax Swissbox project.
+Its licensed under the Apache Software License 2.0 by the OPS4J community.
 
-{code}
-<profile>
-  <id>release</id>
-  <properties>
-    <gpg.passphrase>MY_GPG_PASSPHRASE</gpg.passphrase>
-    <release-paxswissbox-altGitURL>scm:git:file:///path/to/local/repo/org.ops4j.pax.swissbox</release-paxswissbox-altGitURL>
-  </properties>
-</profile>
-{code}
+## Documentation
 
-2) prepare the release:
+* <http://team.ops4j.org/wiki/display/PAXSB>
 
-{code}
-mvn -Prelease,repos.sonatype.staging -Darguments="-Prelease,repos.sonatype.staging" release:prepare -DautoVersionSubmodules=true
-{code}
+## Build
 
-3) perform the release (this fails):
+You'll need a machine with Java 5 or higher and Apache Maven 3 installed.
 
-{code}
-mvn -Prelease,repos.sonatype.staging -Darguments="-Prelease,repos.sonatype.staging" release:perform
-.... auth failure in site:deploy ...
-{code}
+Checkout:
 
-4) go into the checkout directory:
+    git clone git://github.com/ops4j/org.ops4j.pax.swissbox.git
 
-{code}
-cd target/checkout
-{code}
+Run Build:
 
-5) push to oss.sonatype.org:
+    mvn clean install
 
-{code}
-mvn -Prelease,repos.sonatype.staging  source:jar javadoc:jar deploy
-{code}
 
-6) push to github:
+## Releases
 
-{code}
-git push
-{code}
+Releases go to Maven Central.
 
-8) go to oss.sonatype.org and push pax-swissbox to central
+The current release is *Pax Swissbox 1.7.0*.
+
+## Issue Tracking
+
+* <http://team.ops4j.org/browse/PAXSB>
+
+## Continuous Integration Builds
+
+We have a continuous integration build set up here:
+
+* <http://ci.ops4j.org/hudson/job/org.ops4j.pax.swissbox>
+
+Snapshot artifacts are being published to:
+
+* <https://oss.sonatype.org/content/repositories/ops4j-snapshots>
+
+
+The OPS4J Team.
 
