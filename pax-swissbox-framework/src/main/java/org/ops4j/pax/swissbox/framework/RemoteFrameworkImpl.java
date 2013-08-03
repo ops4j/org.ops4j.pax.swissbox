@@ -301,10 +301,9 @@ public class RemoteFrameworkImpl implements RemoteFramework
         }
     }
 
-    public void waitForState( long bundleId, int state, long timeoutInMillis )
-        throws RemoteException, BundleException
+    public void waitForState(long bundleId, int state, long timeoutInMillis) throws RemoteException, BundleException 
     {
-        throw new UnsupportedOperationException( "not yet implemented" );
+        throw new UnsupportedOperationException("not yet implemented");
     }
 
     public int getBundleState( long bundleId ) throws RemoteException, BundleException
@@ -430,7 +429,6 @@ public class RemoteFrameworkImpl implements RemoteFramework
     {
         LOG.fine( "starting RemoteFrameworkImpl" );
         Map<String, String> props = buildFrameworkProperties( args );
-        RemoteFrameworkImpl impl = new RemoteFrameworkImpl( props );
-        impl.start();
+        new RemoteFrameworkImpl( props );
     }
 }
