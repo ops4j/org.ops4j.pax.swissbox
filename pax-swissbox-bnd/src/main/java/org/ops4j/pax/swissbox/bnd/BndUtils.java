@@ -162,7 +162,7 @@ public class BndUtils
     private static PipedInputStream createInputStream( final Jar jar )
         throws IOException
     {
-        final PipedInputStream pin = new PipedInputStream();
+        final CloseAwarePipedInputStream pin = new CloseAwarePipedInputStream();
         final PipedOutputStream pout = new PipedOutputStream( pin );
 
         new Thread()
@@ -175,7 +175,15 @@ public class BndUtils
                 }
                 catch( IOException e )
                 {
-                    LOG.warn( "Bundle cannot be generated", e );
+                    if (pin.closed)
+                    {
+                        // logging the message at DEBUG logging instead
+                        // -- reading thread probably stopped reading
+                        LOG.debug( "Bundle cannot be generated" );
+                    }
+                    else {
+                        LOG.warn( "Bundle cannot be generated", e );
+                    }
                 }
                 finally
                 {
@@ -323,4 +331,17 @@ public class BndUtils
         throw exception;
     }
 
+    /**
+     * PipedInputStream implementation that keeps track of whether it has been closed or not.
+     */
+    private static final class CloseAwarePipedInputStream extends PipedInputStream
+    {
+        private boolean closed = false;
+
+        public void close() throws IOException
+        {
+            closed = true;
+            super.close();
+        }
+    }
 }
