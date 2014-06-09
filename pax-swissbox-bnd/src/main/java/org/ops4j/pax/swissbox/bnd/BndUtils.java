@@ -130,6 +130,10 @@ public class BndUtils
         {
             throw new Ops4jException( e );
         }
+        finally
+        {
+            jar.close();
+        }
                 
 
         // Make the jar a bundle if it is not already a bundle
@@ -199,7 +203,7 @@ public class BndUtils
                     {
                         // logging the message at DEBUG logging instead
                         // -- reading thread probably stopped reading
-                        LOG.debug( "Bundle cannot be generated" );
+                        LOG.debug( "Bundle cannot be generated, pipe closed by reader", e );
                     }
                     else {
                         LOG.warn( "Bundle cannot be generated", e );
