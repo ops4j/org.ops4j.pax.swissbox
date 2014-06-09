@@ -128,11 +128,8 @@ public class BndUtils
         }
         catch ( Exception e )
         {
-            throw new Ops4jException( e );
-        }
-        finally
-        {
             jar.close();
+            throw new Ops4jException( e );
         }
                 
 
@@ -166,6 +163,7 @@ public class BndUtils
             }
             catch ( Exception e )
             {
+                jar.close();
                 throw new Ops4jException( e );
             }
         }
