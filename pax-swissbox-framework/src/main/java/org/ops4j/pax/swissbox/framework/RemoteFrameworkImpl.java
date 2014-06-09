@@ -58,7 +58,10 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class RemoteFrameworkImpl implements RemoteFramework
 {
-
+    /*
+     * The use of java.util.logging instead of SLF4J is intentional
+     * to simplify classpath setup.
+     */
     private static Logger LOG = Logger.getLogger( RemoteFrameworkImpl.class.getName() );
 
     private Framework framework;
