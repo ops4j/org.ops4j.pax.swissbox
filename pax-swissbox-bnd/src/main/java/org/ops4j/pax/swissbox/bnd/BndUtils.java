@@ -245,7 +245,7 @@ public class BndUtils
         final String exportPackage = analyzer.getProperty( Analyzer.EXPORT_PACKAGE );
         if( exportPackage == null || exportPackage.trim().length() == 0 )
         {
-            analyzer.setProperty( Analyzer.EXPORT_PACKAGE, analyzer.calculateExportsFromContents( jar ) );
+            analyzer.setProperty( Analyzer.EXPORT_PACKAGE, "*" );
         }
         final String localSymbolicName = analyzer.getProperty( Analyzer.BUNDLE_SYMBOLICNAME, symbolicName );
         analyzer.setProperty( Analyzer.BUNDLE_SYMBOLICNAME, generateSymbolicName( localSymbolicName ) );
