@@ -61,7 +61,7 @@ public class ContextClassLoaderUtils
         }
         finally
         {
-            if( backupClassLoader != null )
+            if( classLoader != null )
             {
                 currentThread.setContextClassLoader( backupClassLoader );
             }
