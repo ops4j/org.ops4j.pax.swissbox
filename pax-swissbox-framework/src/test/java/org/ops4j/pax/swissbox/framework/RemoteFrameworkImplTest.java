@@ -17,6 +17,7 @@
  */
 package org.ops4j.pax.swissbox.framework;
 
+import java.io.File;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -42,10 +43,11 @@ public class RemoteFrameworkImplTest
         LocateRegistry.createRegistry( 1099 );
         javaRunner = new DefaultJavaRunner( false );
         frameworkFactory = FrameworkFactoryFinder.loadSingleFrameworkFactory();
+        File storage = new File("target", "storage");
         String[] vmOptions = new String[]{
             "-Dosgi.console=6666",
             "-Dosgi.clean=true",
-            "-Dorg.osgi.framework.storage=target/storage",
+            "-Dorg.osgi.framework.storage=" + storage.getPath(),
             "-Dpax.swissbox.framework.rmi.port=1099",
             "-Dpax.swissbox.framework.rmi.name=PaxRemoteFramework"
         };
@@ -106,7 +108,7 @@ public class RemoteFrameworkImplTest
 
     private static String toPath( Class<?> klass )
     {
-        return klass.getProtectionDomain().getCodeSource().getLocation().toString();
+        return klass.getProtectionDomain().getCodeSource().getLocation().getPath();
     }
 
     private String findJavaHome()

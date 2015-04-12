@@ -67,6 +67,7 @@ public class RemoteFrameworkImpl implements RemoteFramework
     private Framework framework;
     private Registry registry;
     private String name;
+    private long timeout; 
 
     public RemoteFrameworkImpl( Map<String, String> frameworkProperties ) throws RemoteException,
         AlreadyBoundException, BundleException
@@ -81,6 +82,7 @@ public class RemoteFrameworkImpl implements RemoteFramework
     {
         String port = System.getProperty( RMI_PORT_KEY, "1099" );
         name = System.getProperty( RMI_NAME_KEY );
+        timeout = Long.parseLong( System.getProperty( TIMEOUT_KEY, "10000") );
         registry = LocateRegistry.getRegistry( Integer.parseInt( port ) );
         URL location1 = getClass().getProtectionDomain().getCodeSource().getLocation();
         URL location2 = Bundle.class.getProtectionDomain().getCodeSource().getLocation();
@@ -104,6 +106,14 @@ public class RemoteFrameworkImpl implements RemoteFramework
     public void stop() throws RemoteException, BundleException
     {
         framework.stop();
+        try 
+        {
+            framework.waitForStop(timeout);
+        }
+        catch (InterruptedException exc) 
+        {
+            LOG.severe("framework did not stop within timeout");
+        }
         try
         {
             registry.unbind( name );
