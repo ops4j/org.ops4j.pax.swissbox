@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,13 +14,13 @@
     <artifactId>pax-swissbox-bnd</artifactId>
     <packaging>bundle</packaging>
 
-    <name>OPS4J Pax Swissbox :: Bnd Utils</name>    
+    <name>OPS4J Pax Swissbox :: Bnd Utils</name>
     <description>
         OPS4J Pax Swissbox - BND utilities.
     </description>
-    
+
     <properties>
-        <bundle.symbolicName>org.ops4j.pax.swissbox.bnd</bundle.symbolicName>  
+        <bundle.symbolicName>org.ops4j.pax.swissbox.bnd</bundle.symbolicName>
     </properties>
 
     <build>
@@ -40,6 +41,12 @@
             <artifactId>bndlib</artifactId>
             <version>2.3.0</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.ops4j.base</groupId>
