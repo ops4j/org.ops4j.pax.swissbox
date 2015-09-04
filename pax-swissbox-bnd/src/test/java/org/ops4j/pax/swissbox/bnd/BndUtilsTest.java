@@ -89,10 +89,18 @@ public class BndUtilsTest
     
     @Test
     public void whiteSpaceInstructionTest()
-    	throws MalformedURLException
+        throws MalformedURLException
     {
-    	Properties p = BndUtils.parseInstructions( "Export-Package=*; version=\"2.4.0\"");
-    	assertEquals( "*; version=\"2.4.0\"", p.getProperty( "Export-Package" ) );
+        Properties p = BndUtils.parseInstructions( "Export-Package=*; version=\"2.4.0\"");
+        assertEquals( "*; version=\"2.4.0\"", p.getProperty( "Export-Package" ) );
+    }
+    
+    @Test
+    public void backslashesInstructionTest()
+        throws MalformedURLException
+    {
+        Properties p = BndUtils.parseInstructions( "Bundle-SymbolicName=C:\\Users\\Administrator\\Downloads\\jboss-fuse");
+        assertEquals( "C:\\Users\\Administrator\\Downloads\\jboss-fuse", p.getProperty( "Bundle-SymbolicName" ) );
     }
     
 }
