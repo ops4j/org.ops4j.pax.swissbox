@@ -20,6 +20,7 @@ package org.ops4j.pax.swissbox.framework;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.URL;
 import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
@@ -83,7 +84,8 @@ public class RemoteFrameworkImpl implements RemoteFramework
         String port = System.getProperty( RMI_PORT_KEY, "1099" );
         name = System.getProperty( RMI_NAME_KEY );
         timeout = Long.parseLong( System.getProperty( TIMEOUT_KEY, "10000") );
-        registry = LocateRegistry.getRegistry( Integer.parseInt( port ) );
+        String address = InetAddress.getLoopbackAddress().getHostAddress();
+        registry = LocateRegistry.getRegistry( address, Integer.parseInt( port ) );
         URL location1 = getClass().getProtectionDomain().getCodeSource().getLocation();
         URL location2 = Bundle.class.getProtectionDomain().getCodeSource().getLocation();
         URL location3 = ServiceLookup.class.getProtectionDomain().getCodeSource().getLocation();
@@ -110,7 +112,7 @@ public class RemoteFrameworkImpl implements RemoteFramework
         {
             framework.waitForStop(timeout);
         }
-        catch (InterruptedException exc) 
+        catch (InterruptedException exc)
         {
             LOG.severe("framework did not stop within timeout");
         }

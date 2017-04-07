@@ -19,6 +19,7 @@ package org.ops4j.pax.swissbox.framework;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -40,7 +41,10 @@ public class RemoteFrameworkImplTest
     @Before
     public void setUp() throws RemoteException
     {
+        String address = InetAddress.getLoopbackAddress().getHostAddress();
+        System.setProperty("java.rmi.server.hostname", address);
         LocateRegistry.createRegistry( 1099 );
+
         javaRunner = new DefaultJavaRunner( false );
         frameworkFactory = FrameworkFactoryFinder.loadSingleFrameworkFactory();
         File storage = new File("target", "storage");
@@ -49,7 +53,8 @@ public class RemoteFrameworkImplTest
             "-Dosgi.clean=true",
             "-Dorg.osgi.framework.storage=" + storage.getPath(),
             "-Dpax.swissbox.framework.rmi.port=1099",
-            "-Dpax.swissbox.framework.rmi.name=PaxRemoteFramework"
+            "-Dpax.swissbox.framework.rmi.name=PaxRemoteFramework",
+            "-Djava.rmi.server.hostname=" + address
         };
         javaRunner.exec( vmOptions, buildClasspath(), RemoteFrameworkImpl.class.getName(),
             null, findJavaHome(), null );
@@ -76,7 +81,7 @@ public class RemoteFrameworkImplTest
 
         framework.stop();
     }
-    
+
     private RemoteFramework findRemoteFramework(int port, String rmiName )
     {
         RemoteFramework framework = null;
@@ -86,18 +91,19 @@ public class RemoteFrameworkImplTest
             {
                 try
                 {
-                    Registry reg = LocateRegistry.getRegistry(  );
+                    String address = InetAddress.getLoopbackAddress().getHostAddress();
+                    Registry reg = LocateRegistry.getRegistry( address, Registry.REGISTRY_PORT );
                     framework = (RemoteFramework) reg.lookup( rmiName );
                 }
                 catch ( Exception e )
                 {
-                    // ignore 
+                    // ignore
                 }
             }
             while ( framework == null && ( System.currentTimeMillis() < startedTrying + 10000 ) );
         return framework;
     }
-        
+
     private String[] buildClasspath()
     {
         String frameworkPath = toPath( frameworkFactory.getClass() );

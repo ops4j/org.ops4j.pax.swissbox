@@ -19,6 +19,8 @@ package org.ops4j.pax.swissbox.framework;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+
+import java.net.InetAddress;
 import java.net.URL;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NoSuchObjectException;
@@ -37,39 +39,42 @@ public class RemoteObjectTest
 {
     private static final int REGISTRY_PORT = 21099;
     private Registry registry;
-    
+
     public static interface HelloService extends Remote
     {
         String getMessage() throws RemoteException;
     }
-    
+
     public static class HelloServiceImpl implements HelloService, Remote {
 
         public String getMessage()
         {
             return "Hello Pax!";
-        }        
+        }
     }
-    
+
     @Before
     public void setUp() throws RemoteException {
+        String address = InetAddress.getLoopbackAddress().getHostAddress();
+        System.setProperty("java.rmi.server.hostname", address);
         registry = LocateRegistry.createRegistry( REGISTRY_PORT );
     }
-    
+
     @After
     public void tearDown() throws NoSuchObjectException {
         UnicastRemoteObject.unexportObject( registry, true );
     }
-    
+
     @Test
     public void exportAndUnexport() throws RemoteException, AlreadyBoundException, NotBoundException {
         URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
         System.setProperty("java.rmi.server.codebase", location.toString());
         HelloServiceImpl hello = new HelloServiceImpl();
-        Registry registry = LocateRegistry.getRegistry( REGISTRY_PORT );
+        String address = InetAddress.getLoopbackAddress().getHostAddress();
+        Registry registry = LocateRegistry.getRegistry( address, REGISTRY_PORT );
         UnicastRemoteObject.exportObject( hello, 0 );
         registry.rebind( "hello", hello );
-        
+
         HelloService remoteHello = (HelloService) registry.lookup( "hello" );
         assertThat(remoteHello.getMessage(), is("Hello Pax!"));
         registry.unbind( "hello" );
