@@ -128,8 +128,37 @@ public class ReifiedType
      * parameter information for Java 5 and later.
      *
      * @return The number of type parameters for this type.
-	 */
-	public int size() {
-		return 0;
-	}
+     */
+    public int size() {
+        return 0;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + clazz.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ReifiedType other = (ReifiedType) obj;
+        return clazz.equals(other.clazz);
+    }
+
+    @Override
+    public String toString() {
+        return "ReifiedType [clazz=" + clazz + "]";
+    }
+
 }
