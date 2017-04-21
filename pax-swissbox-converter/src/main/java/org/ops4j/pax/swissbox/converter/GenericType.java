@@ -23,20 +23,20 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.Arrays;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.ops4j.pax.swissbox.converter.internal.Primitives;
 import org.ops4j.pax.swissbox.converter.loader.Loader;
 
 /**
- * JAVADOC
+ * Generic Type.
  *
  * NOTICE: This class contains code originally developed by "Apache Geronimo Project", OSGi Blueprint Implementation.
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @author Alin Dreghiciu (adreghiciu@gmail.com)
  */
-public class GenericType
-    extends ReifiedType
+public class GenericType extends ReifiedType
 {
 
     private static final GenericType[] EMPTY = new GenericType[0];
@@ -155,40 +155,30 @@ public class GenericType
         return new GenericType( loader.loadClass( localType ) );
     }
 
-    public boolean equals( final Object object )
-    {
-        if( !( object instanceof GenericType ) )
-        {
-            return false;
-        }
-        GenericType other = (GenericType) object;
-        if( getRawClass() != other.getRawClass() )
-        {
-            return false;
-        }
-        if( parameters == null )
-        {
-            return ( other.parameters == null );
-        }
-        else
-        {
-            if( other.parameters == null )
-            {
-                return false;
-            }
-            if( parameters.length != other.parameters.length )
-            {
-                return false;
-            }
-            for( int i = 0; i < parameters.length; i++ )
-            {
-                if( !parameters[ i ].equals( other.parameters[ i ] ) )
-                {
-                    return false;
-                }
-            }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Arrays.hashCode(parameters);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (!(obj instanceof GenericType)) {
+            return false;
+        }
+        GenericType other = (GenericType) obj;
+        if (!Arrays.equals(parameters, other.parameters)) {
+            return false;
+        }
+        return true;
     }
 
     private static GenericType[] parametersOf( final Type type )
