@@ -23,17 +23,17 @@ import static org.ops4j.spi.ServiceProviderFinder.loadAnyServiceProvider;
 import static org.ops4j.spi.ServiceProviderFinder.loadUniqueServiceProvider;
 
 import java.util.List;
-
+import java.util.ServiceLoader;
 import org.osgi.framework.launch.FrameworkFactory;
 
 /**
  * Convenience class for obtaining OSGi {@link FrameworkFactory} implementations
  * via the {@link ServiceLoader}.
- * 
+ *
  * @author Harald Wellmann
  */
-public class FrameworkFactoryFinder 
-{    
+public class FrameworkFactoryFinder
+{
     public static List<FrameworkFactory> findFrameworkFactories()
     {
         return findServiceProviders( FrameworkFactory.class );

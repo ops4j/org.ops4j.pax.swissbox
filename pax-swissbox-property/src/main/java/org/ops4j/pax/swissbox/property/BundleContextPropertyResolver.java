@@ -63,14 +63,14 @@ public class BundleContextPropertyResolver
     }
 
     /**
-     * Resolves a property based on it's name by:<br/>
-     * 1. if there is a configuration available look for the property;<br/>
+     * Resolves a property based on it's name by:<br>
+     * 1. if there is a configuration available look for the property;<br>
      * 2. if property is not set or there is no configuration available look for a framework / system property.
      *
      * @param propertyName property name to be resolved
-     *
      * @return value of property or null if property is not set or is empty.
      */
+    @Override
     public String findProperty( final String propertyName )
     {
         String value = m_bundleContext.getProperty( propertyName );

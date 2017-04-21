@@ -17,12 +17,14 @@
  */
 package org.osgi.service.blueprint.container;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 /**
  * Type converter to convert an object to a target type.
  *
  * @version $Revision: 7564 $
- * @ThreadSafe
  */
+@ThreadSafe
 public interface Converter
 {
 
@@ -52,5 +54,5 @@ public interface Converter
      *                   returned <code>true</code>.
      */
     Object convert( Object sourceObject, ReifiedType targetType)
-			throws Exception;
+            throws Exception;
 }

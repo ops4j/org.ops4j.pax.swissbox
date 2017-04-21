@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Manifest entries filter.
  *
- * @auth Alin Dreghiciu
+ * @author Alin Dreghiciu
  * @since 0.2.0, February 09, 2008
  */
 public interface ManifestFilter

@@ -28,7 +28,7 @@ import org.osgi.service.startlevel.StartLevel;
 
 /**
  * An RMI-capable variant of the OSGi {@link Framework} interface.
- * 
+ *
  * @author Harald Wellmann
  */
 public interface RemoteFramework extends Remote
@@ -37,13 +37,13 @@ public interface RemoteFramework extends Remote
      * System property key for RMI registry port.
      */
     public static final String RMI_PORT_KEY = "pax.swissbox.framework.rmi.port";
-    
+
     /**
      * System property key for the name to be used for the remote framework in the
      * RMI registry.
      */
     public static final String RMI_NAME_KEY = "pax.swissbox.framework.rmi.name";
-    
+
     /**
      * System property key for the framework shutdown timeout (milliseconds in
      * decimal representation).
@@ -52,34 +52,28 @@ public interface RemoteFramework extends Remote
 
     /**
      * Initializes the framework.
-     * 
-     * @see {@link Framework#init}
-     * @throws RemoteException
-     * @throws BundleException
+     *
+     * @see Framework#init()
      */
     void init() throws RemoteException, BundleException;
 
     /**
      * Starts the framework.
-     * 
-     * @see {@link Framework#start}
-     * @throws RemoteException
-     * @throws BundleException
+     *
+     * @see Framework#start()
      */
     void start() throws RemoteException, BundleException;
 
     /**
      * Stops the framework.
-     * 
-     * @see {@link Framework#start}
-     * @throws RemoteException
-     * @throws BundleException
+     *
+     * @see Framework#start()
      */
     void stop() throws RemoteException, BundleException;
 
     /**
      * Installs a bundle remotely.
-     * 
+     *
      * @param bundleUrl url of the bundle to be installed. The url must be accessible from the
      *        remote framework.
      * @return bundle id of the installed bundle
@@ -91,7 +85,7 @@ public interface RemoteFramework extends Remote
 
     /**
      * Installs a bundle remotely, sets its start level and optionally starts it.
-     * 
+     *
      * @param bundleUrl url of the bundle to be installed. The url must be accessible from the
      *        remote framework.
      * @param start indicates whether the bundle will be started
@@ -106,7 +100,7 @@ public interface RemoteFramework extends Remote
     /**
      * Installs a bundle remotely, given the bundle content, autostart it if requested and set its
      * startlevel
-     * 
+     *
      * @param bundleLocation The location identifier of the bundle to install
      * @param bundleData bundle content as a byte array
      * @param start indicates whether the bundle will be started
@@ -120,7 +114,7 @@ public interface RemoteFramework extends Remote
 
     /**
      * Installs a bundle remotely, given the bundle content.
-     * 
+     *
      * @param bundleLocation The location identifier of the bundle to install
      * @param bundle bundle content as a byte array
      * @return bundle id of the installed bundle
@@ -132,7 +126,7 @@ public interface RemoteFramework extends Remote
 
     /**
      * Starts a bundle.
-     * 
+     *
      * @param bundleId id of the bundle to be started
      * @throws RemoteException - Remote communication related exception (mandatory by RMI)
      * @throws BundleException - Re-thrown from starting the bundle
@@ -142,7 +136,7 @@ public interface RemoteFramework extends Remote
 
     /**
      * Stops a bundle.
-     * 
+     *
      * @param bundleId id of the bundle to be stopped
      * @throws RemoteException - Remote communication related exception (mandatory by RMI)
      * @throws BundleException - Re-thrown from stopping the bundle
@@ -152,7 +146,7 @@ public interface RemoteFramework extends Remote
 
     /**
      * Sets bundle start level.
-     * 
+     *
      * @param bundleId id of the bundle to which the start level should be set
      * @param startLevel bundle start level
      * @throws RemoteException - Remote communication related exception (mandatory by RMI)
@@ -163,14 +157,14 @@ public interface RemoteFramework extends Remote
 
     /**
      * Waits for a bundle to be in a certain state and returns.
-     * 
+     * When used with Pax Exam, throws org.ops4j.pax.exam.TimeoutException
+     * if timeout occurred and expected state has not being reached.
+     *
      * @param bundleId bundle id
      * @param state expected state
      * @param timeoutInMillis max time to wait for state
      * @throws RemoteException - Remote communication related exception (mandatory by RMI)
      * @throws BundleException - If bundle cannot be found
-     * @throws org.ops4j.pax.exam.TimeoutException - if timeout occured and expected state has not
-     *         being reached
      */
     void waitForState( long bundleId, int state, long timeoutInMillis )
         throws RemoteException, BundleException;
@@ -187,7 +181,7 @@ public interface RemoteFramework extends Remote
      * Looks up a service matching the given filter and invokes a service method with the given
      * name. The method is expected to have either a parameter of type Object[] or no parameters. It
      * will be invoked with an empty argument list.
-     * 
+     *
      * @param filter LDAP service filter
      * @param methodName service method name
      * @throws RemoteException - Remote communication related exception (mandatory by RMI)
@@ -197,20 +191,12 @@ public interface RemoteFramework extends Remote
 
     /**
      * Invokes a method on this reference in the remote framework
-     * 
-     * @param name
-     * @param args
-     * @return
      */
     Object invokeMethodOnService( RemoteServiceReference reference, String methodName,
             Object... args ) throws RemoteException, Exception;
 
     /**
      * Invokes a method on this reference in the remote framework
-     * 
-     * @param name
-     * @param args
-     * @return
      */
     Object invokeMethodOnService( RemoteServiceReference reference, String methodName,
             Class<?>[] parameterTypes, Object[] args ) throws RemoteException, Exception;
@@ -218,7 +204,7 @@ public interface RemoteFramework extends Remote
     /**
      * Fetch an array of {@link RemoteServiceReference} to interact with them, this is a snapshot of
      * the current state and must be recalled to update
-     * 
+     *
      * @param filter
      * @return
      * @throws RemoteException
@@ -231,7 +217,7 @@ public interface RemoteFramework extends Remote
     /**
      * Fetch an array of {@link RemoteServiceReference} to interact with them, this is a snapshot of
      * the current state and must be recalled to update
-     * 
+     *
      * @param filter
      * @param timeout wait the specified amout of time in relation to the timeunit for a service
      *        matchign the filter to appear
@@ -245,33 +231,36 @@ public interface RemoteFramework extends Remote
 
     /**
      * Sets the framework startlevel.
-     * 
-     * @see {@link StartLevel#setStartLevel(int)}
+     *
      * @param startLevel
      * @throws RemoteException
+     *
+     * @see StartLevel#setStartLevel(int)
      */
     void setFrameworkStartLevel( int startLevel ) throws RemoteException;
 
     /**
      * Sets the framework startlevel and waits for at most the given timeout (in ms) for the
      * startlevel to be reached.
-     * 
-     * @see {@link StartLevel#setStartLevel(int)}
+     *
      * @param startLevel
      * @throws RemoteException
      * @return true if the start level has been reached within the given timeout
+     *
+     * @see StartLevel#setStartLevel(int)
      */
     boolean setFrameworkStartLevel( int startLevel, long timeout )
         throws RemoteException;
 
     /**
      * Returns the state of the bundle with the given ID.
-     * 
-     * @see {@link org.osgi.framework.Bundle#getState()}
+     *
      * @param bundleId bundle ID
      * @return state of bundle
      * @throws RemoteException
      * @throws BundleException if there is no bundle with the given ID
+     *
+     * @see org.osgi.framework.Bundle#getState()
      */
     int getBundleState( long bundleId ) throws RemoteException, BundleException;
 }
