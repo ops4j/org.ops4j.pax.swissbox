@@ -17,6 +17,8 @@
  */
 package org.osgi.service.blueprint.container;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Provides access to a concrete type and its optional generic type parameters.
  *
@@ -43,8 +45,8 @@ package org.osgi.service.blueprint.container;
  * optional type parameters as Reified Types.
  *
  * @version $Revision: 7564 $
- * @Immutable
  */
+@Immutable
 public class ReifiedType
 {
 

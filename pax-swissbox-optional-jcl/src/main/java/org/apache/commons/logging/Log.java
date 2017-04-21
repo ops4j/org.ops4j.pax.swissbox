@@ -39,7 +39,7 @@ package org.apache.commons.logging;
  * The mapping of these log levels to the concepts used by the underlying
  * logging system is implementation dependent.
  * The implemention should ensure, though, that this ordering behaves
- * as expected.</p>
+ * as expected.
  *
  * <p>Performance is often a logging concern.
  * By examining the appropriate property,
@@ -47,13 +47,12 @@ package org.apache.commons.logging;
  * to be logged).</p>
  *
  * <p> For example,
- * <code><pre>
+ * <pre>
  *    if (log.isDebugEnabled()) {
  *        ... do something expensive ...
  *        log.debug(theResult);
  *    }
- * </pre></code>
- * </p>
+ * </pre>
  *
  * <p>Configuration of the underlying logging system will generally be done
  * external to the Logging APIs, through whatever mechanism is supported by

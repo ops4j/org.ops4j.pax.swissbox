@@ -81,15 +81,14 @@ public class BundleUtils
         // well, discovery failed
         return null;
     }
-    
+
     /**
      * Returns any bundle with the given symbolic name, or null if no such bundle exists. If there
      * are multiple bundles with the same symbolic name and different version, this method returns
      * the first bundle found.
-     * 
+     *
      * @param bc bundle context
      * @param symbolicName bundle symbolic name
-     * @param version bundle version
      * @return matching bundle, or null
      */
     public static Bundle getBundle( BundleContext bc, String symbolicName )
@@ -99,7 +98,7 @@ public class BundleUtils
 
     /**
      * Returns a list of all bundles with the given symbolic name.
-     * 
+     *
      * @param bc bundle context
      * @param symbolicName bundle symbolic name
      * @return matching bundles. The list may be empty, but never null.
@@ -120,7 +119,7 @@ public class BundleUtils
     /**
      * Returns the bundle with the given symbolic name and the given version, or null if no such
      * bundle exists
-     * 
+     *
      * @param bc bundle context
      * @param symbolicName bundle symbolic name
      * @param version bundle version
