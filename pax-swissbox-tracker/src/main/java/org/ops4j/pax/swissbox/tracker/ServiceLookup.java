@@ -25,6 +25,8 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for looking up services from the OSGi registry. The methods of this class wait
@@ -39,10 +41,20 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class ServiceLookup
 {
+    private static final Logger LOG = LoggerFactory.getLogger( ServiceLookup.class );
+
     /**
      * Default timeout used for service lookup when no explicit timeout is specified.
      */
-    public static final long DEFAULT_TIMEOUT = 10000;
+    public static final long DEFAULT_TIMEOUT;
+
+    static {
+        final String DEFAULT_TIMEOUT_VALUE_PROPERTY =
+            "org.ops4j.pax.swissbox.tracker.ServiceLookup.DEFAULT_TIMEOUT";
+        final int DEFAULT_TIMEOUT_VALUE = 10000;
+        DEFAULT_TIMEOUT = Long.getLong(DEFAULT_TIMEOUT_VALUE_PROPERTY, DEFAULT_TIMEOUT_VALUE);
+        LOG.info("Use timeout value: {}", DEFAULT_TIMEOUT);
+    }
 
     /**
      * Returns a service matching the given criteria.
