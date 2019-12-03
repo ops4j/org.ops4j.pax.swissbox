@@ -36,7 +36,7 @@
   <properties>
     <pax.swissbox.wiki.url>http://team.ops4j.org/wiki/display/PAXSB</pax.swissbox.wiki.url>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <dependency.base.version>1.5.0</dependency.base.version>
+    <dependency.base.version>1.5.1</dependency.base.version>
     <dependency.slf4j.version>1.5.11</dependency.slf4j.version>
   </properties>
 
