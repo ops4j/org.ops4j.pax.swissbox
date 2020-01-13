@@ -76,7 +76,7 @@ public class RemoteFrameworkImplTest
         RemoteFramework framework = findRemoteFramework (1099, "PaxRemoteFramework");
         framework.start();
 
-        long commonsIoId = framework.installBundle( "file:target/bundles/commons-io-2.1.jar" );
+        long commonsIoId = framework.installBundle( "file:target/bundles/commons-io-2.5.jar" );
         framework.startBundle( commonsIoId );
 
         framework.stop();
