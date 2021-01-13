@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.ops4j.pax</groupId>
     <artifactId>swissbox</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.4</version>
   </parent>
 
   <groupId>org.ops4j.pax.swissbox</groupId>
