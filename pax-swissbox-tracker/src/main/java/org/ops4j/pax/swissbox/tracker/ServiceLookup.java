@@ -20,10 +20,7 @@ package org.ops4j.pax.swissbox.tracker;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Filter;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,6 +259,9 @@ public class ServiceLookup
     private static ServiceTracker createServiceTracker( BundleContext bc, String className,
             Map<String, String> props )
     {
+        if (bc == null) {
+            bc = FrameworkUtil.getBundle(ServiceLookup.class).getBundleContext();
+        }
         if( props == null || props.isEmpty() )
         {
             return new ServiceTracker( bc, className, null );
@@ -285,6 +285,9 @@ public class ServiceLookup
     private static ServiceTracker createServiceTrackerWithFilter( BundleContext bc,
             String ldapFilter )
     {
+        if (bc == null) {
+            bc = FrameworkUtil.getBundle(ServiceLookup.class).getBundleContext();
+        }
         try
         {
             Filter filter;
