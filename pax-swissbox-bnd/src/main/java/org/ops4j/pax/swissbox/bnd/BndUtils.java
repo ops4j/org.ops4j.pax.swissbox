@@ -316,7 +316,7 @@ public class BndUtils
     }
 
     private static String verifyKey(String key) {
-		List<String> list = new ArrayList<String>(Arrays.asList(Constants.headers));
+		List<String> list = new ArrayList<String>(Constants.headers);
 		//patch the header list for an additional Web-ContextPath
 		list.add("Web-ContextPath");
 		if (list.contains(key)) {
