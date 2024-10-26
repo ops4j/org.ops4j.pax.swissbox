@@ -14,10 +14,7 @@
   <packaging>pom</packaging>
 
   <name>OPS4J Pax Swissbox</name>
-  <description>
-    OPS4J Pax Swissbox - Utilities for OSGi World.
-    Detailed information to be found at http://team.ops4j.org/wiki/display/PAXSB/.
-  </description>
+  <description>OPS4J Pax Swissbox - Utilities for OSGi</description>
 
   <url>${pax.swissbox.wiki.url}</url>
 
@@ -29,12 +26,12 @@
   </scm>
 
   <issueManagement>
-    <system>jira</system>
-    <url>http://team.ops4j.org/browse/PAXSB</url>
+    <system>GitHub</system>
+    <url>https://github.com/ops4j/org.ops4j.pax.swissbox/issues</url>
   </issueManagement>
 
   <properties>
-    <pax.swissbox.wiki.url>http://team.ops4j.org/wiki/display/PAXSB</pax.swissbox.wiki.url>
+    <pax.swissbox.wiki.url>https://ops4j1.jira.com/wiki/spaces/PAXSB</pax.swissbox.wiki.url>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <dependency.base.version>1.5.1</dependency.base.version>
     <dependency.slf4j.version>1.7.36</dependency.slf4j.version>
