@@ -38,7 +38,6 @@
         <dependency>
             <groupId>biz.aQute.bnd</groupId>
             <artifactId>biz.aQute.bndlib</artifactId>
-            <version>6.1.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
