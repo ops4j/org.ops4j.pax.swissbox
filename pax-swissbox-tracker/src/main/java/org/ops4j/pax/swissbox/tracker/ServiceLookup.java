@@ -22,8 +22,6 @@ import java.util.Map.Entry;
 
 import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for looking up services from the OSGi registry. The methods of this class wait
@@ -38,7 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ServiceLookup
 {
-    private static final Logger LOG = LoggerFactory.getLogger( ServiceLookup.class );
 
     /**
      * Default timeout used for service lookup when no explicit timeout is specified.
@@ -50,7 +47,6 @@ public class ServiceLookup
             "org.ops4j.pax.swissbox.tracker.ServiceLookup.DEFAULT_TIMEOUT";
         final int DEFAULT_TIMEOUT_VALUE = 10000;
         DEFAULT_TIMEOUT = Long.getLong(DEFAULT_TIMEOUT_VALUE_PROPERTY, DEFAULT_TIMEOUT_VALUE);
-        LOG.info("Use timeout value: {}", DEFAULT_TIMEOUT);
     }
 
     /**
