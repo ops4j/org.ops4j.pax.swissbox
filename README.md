@@ -1,11 +1,7 @@
-Pax Swissbox
-============
+# OPS4J Pax Swissbox
 
-Thanks for looking into Pax Swissbox - a collection of utilities for OSGi applications, used by various other 
-OPS4J projects.
+[![CI](https://github.com/ops4j/org.ops4j.pax.swissbox/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/ops4j/org.ops4j.pax.swissbox/actions/workflows/maven.yml)
 
-This is the official source repository of the OPS4J Pax Swissbox project.
-It is licensed under the Apache Software License 2.0 by the OPS4J community.
+Pax Swissbox is a collection of utilities for OSGi applications and is used by various other OPS4J projects.
 
-## Documentation
-* https://ops4j1.jira.com/wiki/spaces/PAXSB
+* [Documentation](https://ops4j1.jira.com/wiki/spaces/PAXSB)
