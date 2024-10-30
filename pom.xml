@@ -191,7 +191,6 @@
       </activation>
       <modules>
         <module>pax-swissbox-bnd</module>
-        <module>pax-swissbox-converter</module>
         <module>pax-swissbox-core</module>
         <module>pax-swissbox-extender</module>
         <module>pax-swissbox-framework</module>
@@ -207,7 +206,6 @@
       <id>release</id>
       <modules>
         <module>pax-swissbox-bnd</module>
-        <module>pax-swissbox-converter</module>
         <module>pax-swissbox-core</module>
         <module>pax-swissbox-extender</module>
         <module>pax-swissbox-framework</module>
