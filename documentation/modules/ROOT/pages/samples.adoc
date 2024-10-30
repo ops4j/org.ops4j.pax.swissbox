@@ -1,0 +1,4 @@
+= Pax Swissbox Samples
+:navtitle: Samples
+
+Manifest entry extender sample.

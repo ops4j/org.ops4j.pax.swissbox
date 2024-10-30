@@ -1,0 +1,4 @@
+= Pax Swissbox Extender
+:navtitle: Extender
+
+Utilities related to extender pattern.

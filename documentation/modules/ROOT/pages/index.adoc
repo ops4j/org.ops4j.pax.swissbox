@@ -1,0 +1,4 @@
+= Pax Swissbox
+:navtitle: Pax Swissbox
+
+Utilities for OSGi

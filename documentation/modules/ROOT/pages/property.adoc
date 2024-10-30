@@ -1,0 +1,4 @@
+= Pax Swissbox Property
+:navtitle: Property
+
+Utilities related to properties in OSGi.

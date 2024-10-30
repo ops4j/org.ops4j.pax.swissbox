@@ -1,0 +1,4 @@
+= Pax Swissbox Core
+:navtitle: Core
+
+Utilities related to OSGi core framework.

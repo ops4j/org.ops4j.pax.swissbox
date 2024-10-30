@@ -1,0 +1,4 @@
+= Pax Swissbox Lifecycle
+:navtitle: Lifecycle
+
+Utilities related to lifecycle.
