@@ -4,7 +4,6 @@
 * xref:extender.adoc[]
 * xref:framework.adoc[]
 * xref:lifecycle.adoc[]
-* xref:optional-jcl.adoc[]
 * xref:property.adoc[]
 * xref:tracker.adoc[]
 * xref:samples.adoc[]
