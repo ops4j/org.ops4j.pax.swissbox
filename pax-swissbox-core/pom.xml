@@ -37,11 +37,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.ops4j.pax.swissbox</groupId>
-      <artifactId>pax-swissbox-lifecycle</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.ops4j.base</groupId>
       <artifactId>ops4j-base-lang</artifactId>
     </dependency>
