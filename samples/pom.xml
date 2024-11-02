@@ -16,9 +16,7 @@
   <packaging>pom</packaging>
 
   <name>OPS4J Pax Swissbox :: Samples</name>
-  <description>
-    OPS4J Pax Swissbox Samples
-  </description>
+  <description>OPS4J Pax Swissbox Samples</description>
 
   <modules>
     <module>manifest-extender</module>

@@ -15,9 +15,7 @@
   <packaging>bundle</packaging>
 
   <name>OPS4J Pax Swissbox :: Samples :: Manifest Extender</name>
-  <description>
-    OPS4J Pax Swissbox - Manifest entry extender sample.
-  </description>
+  <description>OPS4J Pax Swissbox - Manifest entry extender sample.</description>
 
   <properties>
     <bundle.symbolicName>org.ops4j.pax.swissbox.samples.em.extender</bundle.symbolicName>

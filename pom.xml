@@ -16,8 +16,6 @@
   <name>OPS4J Pax Swissbox</name>
   <description>OPS4J Pax Swissbox - Utilities for OSGi</description>
 
-  <url>${pax.swissbox.wiki.url}</url>
-
   <scm>
     <connection>scm:git:https://github.com/ops4j/org.ops4j.pax.swissbox.git</connection>
     <developerConnection>scm:git:https://github.com/ops4j/org.ops4j.pax.swissbox.git</developerConnection>
@@ -31,7 +29,6 @@
   </issueManagement>
 
   <properties>
-    <pax.swissbox.wiki.url>https://ops4j1.jira.com/wiki/spaces/PAXSB</pax.swissbox.wiki.url>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <dependency.base.version>1.5.1</dependency.base.version>
     <dependency.slf4j.version>1.7.36</dependency.slf4j.version>
@@ -55,7 +52,7 @@
           <extensions>true</extensions>
           <configuration>
             <instructions>
-              <Bundle-DocURL>${pax.swissbox.wiki.url}</Bundle-DocURL>
+              <Bundle-DocURL>https://github.com/ops4j/org.ops4j.pax.swissbox</Bundle-DocURL>
               <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
               <Import-Package>org.osgi.framework;version="[1.3,2)", *</Import-Package>
             </instructions>

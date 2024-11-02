@@ -1,4 +1,9 @@
 = Pax Swissbox
 :navtitle: Pax Swissbox
 
-Utilities for OSGi
+== Utilities for OSGi
+
+Pax Swissbox is a set of utilities targeting OSGi and the project emerged as means for re-usage within Pax projects.
+But, as Pax Swissbox artifacts are generic, they can be reused outside Pax projects.
+In order to minimize dependencies and improve modularity Pax Swissbox is split in very fine-grained bundles that you can use individually.
+Pax Swissbox artifacts are meant to be embedded (wrapped) in your bundle (easy to achieve using Maven Bundle Plugin), but you can use them as standalone bundles.

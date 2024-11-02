@@ -1,4 +1,79 @@
 = Pax Swissbox Extender
 :navtitle: Extender
 
-Utilities related to extender pattern.
+Utilities related to https://enroute.osgi.org/FAQ/400-patterns.html#extender-pattern[extender pattern].
+
+== `BundleManifestScanner`
+
+You should use the `BundleManifestScanner` if you wish to implement an extender that is triggered by existence of specific entries in bundle manifest (`META-INF/MANIFEST.MF`).
+
+Usually in your extender `BundleActivator` you will create and start an instance of `BundleWatcher` by passing in a `BundleManifestScanner` and your extender specific `BundleObserver`.
+
+[source, java]
+----
+new BundleWatcher<ManifestEntry>(
+    bundleContext,
+    // bundle manifest scanner
+    new BundleManifestScanner(...),
+    // customizer for scanned entries
+    new BundleObserver<ManifestEntry>() {
+        public void addingEntries(Bundle bundle, List<ManifestEntry> entries) {
+            // your specific code, doing something with the manifest entries
+        }
+        public void removingEntries(Bundle bundle, List<ManifestEntry> entries) {
+            // revert actions (if required)
+        }
+    }
+);
+----
+
+=== `BundleManifestScanner`
+
+This scanner takes the starting bundle manifest entries and makes use of provided `ManifestFilter` to find out if the current bundle manifest contains expected entries.
+If there are any entries matched by the manifest filter it will create for each one a `ManifestEntry` which is a simple pair between manifest header name and value.
+Below is an example of creating a `BundleManifestScanner` that uses a regular expression based manifest filter:
+
+[source, java]
+----
+new BundleManifestScanner(
+    new RegexKeyManifestFilter(
+        "Bundle-.*"
+    )
+);
+----
+
+=== `ManifestFilter`
+
+Manifest filters scope is to filter the manifest entries to the set required by your extender.
+You can implement your own filter and/or make use of the built-in ones:
+
+* `RegexKeyManifestFilter` — matches manifest headers name against a regular expression
+* ... more to come
+
+== `BundleURLScanner`
+
+You should use the `BundleURLScanner` if you wish to implement an extender that is triggered by existence of specific files or directories in bundles.
+
+=== Example WAR Extender
+
+The following is an example of how you can implement an extender bundle for war files:
+
+----
+new BundleWatcher<URL>(
+    bundleContext,
+    new BundleURLScanner(
+        "WEB-INF/",
+        "web.xml",
+        false // do not recurse
+    ),
+    new BundleObserver<URL>() {
+        public void addingEntries(Bundle bundle, List<URL> entries) {
+            // process web xml, as for example parsing and registering servlets
+        }
+
+        public void removingEntries(Bundle bundle, List<URL> entries) {
+            // revert processing of web xml
+        }
+    }
+).start();
+----

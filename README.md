@@ -6,4 +6,4 @@
 
 Pax Swissbox is a collection of utilities for OSGi applications and is used by various other OPS4J projects.
 
-* [Documentation](https://ops4j1.jira.com/wiki/spaces/PAXSB)
+* [Documentation](https://ops4j.github.io/pax-swissbox/)
