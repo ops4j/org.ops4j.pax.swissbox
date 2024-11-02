@@ -4,7 +4,7 @@
         <artifactId>swissbox</artifactId>
         <groupId>org.ops4j.pax</groupId>
         <version>1.8.6-SNAPSHOT</version>
-        <relativePath>..</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>org.ops4j.pax.swissbox</groupId>
     <artifactId>pax-swissbox-framework</artifactId>
