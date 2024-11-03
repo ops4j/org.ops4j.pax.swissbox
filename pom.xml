@@ -17,9 +17,9 @@
   <description>OPS4J Pax Swissbox - Utilities for OSGi</description>
 
   <scm>
-    <connection>scm:git:https://github.com/ops4j/org.ops4j.pax.swissbox.git</connection>
-    <developerConnection>scm:git:https://github.com/ops4j/org.ops4j.pax.swissbox.git</developerConnection>
-    <url>scm:git:https://github.com/ops4j/org.ops4j.pax.swissbox.git</url>
+    <connection>scm:git:git@github.com:ops4j/org.ops4j.pax.swissbox.git</connection>
+    <developerConnection>scm:git:git@github.com:ops4j/org.ops4j.pax.swissbox.git</developerConnection>
+    <url>https://github.com/ops4j/org.ops4j.pax.swissbox</url>
     <tag>HEAD</tag>
   </scm>
 
