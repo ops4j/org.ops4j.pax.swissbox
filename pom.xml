@@ -10,7 +10,7 @@
 
   <groupId>org.ops4j.pax</groupId>
   <artifactId>swissbox</artifactId>
-  <version>1.8.6-SNAPSHOT</version>
+  <version>1.9.0</version>
   <packaging>pom</packaging>
 
   <name>OPS4J Pax Swissbox</name>
@@ -20,7 +20,7 @@
     <connection>scm:git:git@github.com:ops4j/org.ops4j.pax.swissbox.git</connection>
     <developerConnection>scm:git:git@github.com:ops4j/org.ops4j.pax.swissbox.git</developerConnection>
     <url>https://github.com/ops4j/org.ops4j.pax.swissbox</url>
-    <tag>HEAD</tag>
+    <tag>swissbox-1.9.0</tag>
   </scm>
 
   <issueManagement>
